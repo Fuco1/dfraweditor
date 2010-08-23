@@ -1,6 +1,6 @@
 #labels Powergoals
 == Power Goals ==
-=== Fully user-modifyable syntax highlighting [done] ===
+=== Fully user-modifyable syntax highlighting (partialy done) ===
 Users will be able to modify the XML database of keywords and add new when DF format changes. Users will be able to modify the color and text decoration scheme via XML css-like configuration.
 
 Each keyword has a type signature which governs how the token is rendered.
