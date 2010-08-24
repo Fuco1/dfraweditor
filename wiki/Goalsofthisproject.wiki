@@ -5,7 +5,7 @@ Users will be able to modify the XML database of keywords and add new when DF fo
 
 Each keyword has a type signature which governs how the token is rendered.
 
-=== Autocomplete ===
+=== Autocomplete (partialy done) ===
 User will be able to invoke a keystrok which will offer him a list of valid tokens. The list will be dynamicly searched and narrowed as the user type in more letters.
 
 Future features might include learning frequent tags and prioritizing those, as well as some more elaborate patterns.
