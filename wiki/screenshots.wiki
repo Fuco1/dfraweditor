@@ -1,0 +1,2 @@
+Syntax HL and autocomplete dialog
+http://i.imgur.com/oj1x5.png
