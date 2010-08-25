@@ -10,6 +10,9 @@ User will be able to invoke a keystrok which will offer him a list of valid toke
 
 Future features might include learning frequent tags and prioritizing those, as well as some more elaborate patterns.
 
+=== DOM ===
+As the current approach to HL/AC is best described as "ad-hoc", we should develop a DOM (Document Object Model) similar to that of XML. Editing, validation, HL/AC and crosslinks will be much more effective and easy to implement. Various 3rd party WYSIVYG plugins working with this DOM will be fast and easy to implement.
+
 === Project browser & tabbed editor enviroment ===
 User will be able to browse the project files in the tree-like structure (similar to how most IDEs handle project files). Double-clicking the file will open it on new tab (if not already opened), or center user to the already opened tab. User will be easily able to open and close tabs, rearrange them etc.
 
