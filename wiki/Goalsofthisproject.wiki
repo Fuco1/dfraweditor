@@ -15,3 +15,11 @@ User will be able to browse the project files in the tree-like structure (simila
 
 === Smart links ===
 User will be able to navigate between RAW files via hyperlinks. The editor will figure out the relations between several RAW files (like body details and creature raws, buildings and reactions etc.) and link these together.
+
+=== Token description library ===
+A token definition library. Where the program could give you the function of a specific token (perhaps moused-over or highlighted) and tell you default values, warnings, and other information like that.
+(Author: Shukaro)
+
+=== Template library ===
+A template library. A collection of creature, item, and such entries that have all the important tokens in them, so that if you wanted to make a new creature or something you could just load up the template for it.
+(Author: Shukaro)
