@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+OBJECT: top level objects defining what objects are in the raw file
+ENTITY: an entity in the raw file, it may be item, creature, tissue template...
+DIRECTIVE: flag or token inside the entity
+
+-->
+<keywords
+    xsi:noNamespaceSchemaLocation="keywords.xsd"
+    xmlns=""
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+    <keyword>
+        <name>OBJECT</name>
+        <type>OBJECT</type>
+        <container/>
+    </keyword>
+
+    <keyword>
+        <name>ITEM_ARMOR</name>
+        <type>CONTAINER</type>
+        <indent/>
+        <container/>
+    </keyword>
+
+    <keyword>
+        <name>ITEM_HELM</name>
+        <type>CONTAINER</type>
+        <indent/>
+        <container/>
+    </keyword>
+
+    <keyword>
+        <name>ARMORLEVEL</name>
+        <type>TOKEN</type>
+    </keyword>
+
+    <keyword>
+        <name>NAME</name>
+        <type>TOKEN</type>
+    </keyword>
+    
+    <keyword>
+        <name>UBSTEP</name>
+        <type>TOKEN</type>
+    </keyword>
+    
+    <keyword>
+        <name>LBSTEP</name>
+        <type>TOKEN</type>
+    </keyword>
+    
+    <keyword>
+        <name>LAYER</name>
+        <type>TOKEN</type>
+    </keyword>
+    
+    <keyword>
+        <name>COVERAGE</name>
+        <type>TOKEN</type>
+    </keyword>
+    
+    <keyword>
+        <name>LAYER_SIZE</name>
+        <type>TOKEN</type>
+    </keyword>
+    
+    <keyword>
+        <name>LAYER_PERMIT</name>
+        <type>TOKEN</type>
+    </keyword>
+
+    <keyword>
+        <name>MATERIAL_SIZE</name>
+        <type>TOKEN</type>
+    </keyword>
+
+    <keyword>
+        <name>SHAPED</name>
+        <type>FLAG</type>
+    </keyword>
+
+    <keyword>
+        <name>HARD</name>
+        <type>FLAG</type>
+    </keyword>
+
+    <keyword>
+        <name>METAL</name>
+        <type>FLAG</type>
+    </keyword>
+</keywords>

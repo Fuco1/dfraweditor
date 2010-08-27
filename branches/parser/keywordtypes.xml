@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<keywordtypes
+    xsi:noNamespaceSchemaLocation="keywordtypes.xsd"
+    xmlns=""
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <type>
+        <id>OBJECT</id>
+        <color>#000000</color>
+        <bold/>
+    </type>
+
+    <type>
+        <id>CONTAINER</id>
+        <color>#0000e9</color>
+    </type>
+
+    <type>
+        <id>TOKEN</id>
+        <color>#00a000</color>
+    </type>
+
+    <type>
+        <id>FLAG</id>
+        <color>#00a000</color>
+        <italic/>
+    </type>
+
+    <type>
+        <id>ARGUMENT</id>
+        <color>#00ff00</color>
+    </type>
+
+    <type>
+        <id>INT</id>
+        <color>#a048a0</color>
+    </type>
+
+    <type>
+        <id>STRING</id>
+        <color>#ce7b00</color>
+    </type>
+</keywordtypes>
