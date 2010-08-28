@@ -8,6 +8,8 @@ For example, while defining armor, `ITEM_ARMOR` container is used. Referencing i
 <id name="ITEM_SUB_ID" from="ITEM_TOY" to="TOY" category="ITEM_ID"/>
 }}}
 
+`ITEM_ID` is now a placeholder for `ARMOR` and `TOY` (in other words, the destination name, or content, of the `category` attribute)
+
 Some tokens, like `[BODY_DETAIL_PLAN:STANDARD_MATERIALS]` are called the same both in definition and reference. There could be a [http://en.wikipedia.org/wiki/Convention_over_configuration COC] rule to link these by default.
 
 Another issue is, for example in `[REAGENT:A:1:ARMOR:NONE:METAL:NONE]`, the `ARMOR` argument is not the name of the token. By convention, in all raws, the sub-definition follows the "category" (armor, toy, weapon...). While the `<id`> tag only links tokens and containers, we'll need another flag to say "this argument is a reference to category, a sub category follows".
@@ -33,4 +35,16 @@ By convention, if `ref` attribute is present, it should look to the previous tag
 
 This will require adding 1 attribute to argument/token/container definition (`category`), and one element `id` with 3 attributes `from`, `to`, and `category`.
 
-It will be possible to rename `category` attribute in `id` element to `id` and in `a` element to `ref`, and treat them the same way as the rest (with the rule that if we're unsure about subcategory, we'll check previous argument `ref/category`). I've used different names to make the article more comprehensive.
+It will be possible to rename `category` attribute in `id` element to `id` and in `a` element to `ref`, and treat them the same way as the rest (with the rule that if we're unsure about subcategory, we'll check previous argument `ref/category`). I've used different names to make the article more comprehensive. The examples in "renamed" format will look like this
+
+{{{
+<id name="ITEM_SUB_ID" from="ITEM_ARMOR" to="ARMOR" id="ITEM_ID"/>
+<id name="ITEM_SUB_ID" from="ITEM_TOY" to="TOY" id="ITEM_ID"/>
+
+<t name="REAGENT"/>
+  ...
+  <a type="string" ref="ITEM_ID"/>
+  <a type="string" ref="ITEM_SUB_ID"/>
+  ...
+</t>
+}}}
