@@ -19,6 +19,7 @@ package com.bay12games.df.rawedit.xml.entities;
 import java.util.Map;
 
 /**
+ * Simple tuple class to hold container and token definitions.
  *
  * @author Matus Goljer
  * @version 1.0
@@ -27,10 +28,12 @@ public class ElementContainer {
 
     private Map<String, Container> containers;
     private Map<String, Token> tokens;
+    private Map<String, Id> ids;
 
-    public ElementContainer(Map<String, Container> containers, Map<String, Token> tokens) {
+    public ElementContainer(Map<String, Container> containers, Map<String, Token> tokens, Map<String, Id> ids) {
         this.containers = containers;
         this.tokens = tokens;
+        this.ids = ids;
     }
 
     public Map<String, Container> getContainers() {
@@ -39,5 +42,9 @@ public class ElementContainer {
 
     public Map<String, Token> getTokens() {
         return tokens;
+    }
+
+    public Map<String, Id> getIds() {
+        return ids;
     }
 }

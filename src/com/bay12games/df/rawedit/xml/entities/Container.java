@@ -20,6 +20,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * Container is a special kind of token that can hold other tokens and containers,
+ * not just arguments.
+ *
+ * Each container holds the list of allowed sub-containers and tokens.
+ *
+ * TODO: The required arguments/containers/tokens are not handled in any way. The
+ * XML format however can specify the required attribute.
  *
  * @author Matus Goljer
  * @version 1.0

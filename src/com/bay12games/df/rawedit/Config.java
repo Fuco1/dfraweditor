@@ -21,6 +21,7 @@ import com.bay12games.df.rawedit.xml.KeyWordTypeLoader;
 import com.bay12games.df.rawedit.xml.RawsLoader;
 import com.bay12games.df.rawedit.xml.entities.Container;
 import com.bay12games.df.rawedit.xml.entities.ElementContainer;
+import com.bay12games.df.rawedit.xml.entities.Id;
 import com.bay12games.df.rawedit.xml.entities.Token;
 import java.io.FileReader;
 import java.io.IOException;
@@ -38,6 +39,7 @@ public class Config {
     private Map<String, KeyWordType> keywordTypes;
     private Map<String, Container> containers;
     private Map<String, Token> tokens;
+    private Map<String, Id> ids;
     private Properties properties;
 
     public Config() {
@@ -53,10 +55,27 @@ public class Config {
 //            keywords = kwloader.load(properties.getProperty("keyword.Source"), keywordTypes);
 
             RawsLoader rloader = new RawsLoader();
-            ElementContainer ec = rloader.parse(properties.getProperty("raws.Source"));
+            // list of colon-delimited sources for raws
+            String sourceProp = properties.getProperty("raws.Source");
+            String[] sources = {""};
+            if (sourceProp != null) {
+                sources = sourceProp.split("\\:");
+            }
+
+            // load all files incrementally
+            ElementContainer ec = null;
+            for (String s : sources) {
+                ec = rloader.parse(s, ec);
+            }
+
             if (ec != null) {
                 containers = ec.getContainers();
                 tokens = ec.getTokens();
+                ids = ec.getIds();
+            }
+
+            for (Id id : ids.values()) {
+                System.out.println(id + "\n");
             }
 //            for (int i = 0; i < 100; i++) {
 //                keywords.put(Integer.toString(i), null);
@@ -79,13 +98,16 @@ public class Config {
 //    public Map<String, KeyWord> getKeywords() {
 //        return keywords;
 //    }
-
     public Map<String, Container> getContainers() {
         return containers;
     }
 
     public Map<String, Token> getTokens() {
         return tokens;
+    }
+
+    public Map<String, Id> getIds() {
+        return ids;
     }
 
     public String getProperty(String key) {
