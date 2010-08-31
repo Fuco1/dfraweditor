@@ -93,6 +93,11 @@ public class DocumentLoader {
         Token currentToken;
         Argument a;
 
+        // Needs error checking. If the token cannot be added anywhere,
+        // revert to the last position (ie, the stack should be the same as
+        // when we encountered the invalid token/attribute) and assume it's a
+        // comment.
+        
         tokenstream:
         for (String token : ti) {
             if (token.isEmpty() || token.matches("\\s+")) {

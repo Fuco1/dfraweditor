@@ -19,25 +19,38 @@ package com.bay12games.df.rawedit.xml;
 import com.bay12games.df.rawedit.xml.entities.Argument;
 import com.bay12games.df.rawedit.xml.entities.Container;
 import com.bay12games.df.rawedit.xml.entities.ElementContainer;
+import com.bay12games.df.rawedit.xml.entities.Id;
 import com.bay12games.df.rawedit.xml.entities.Token;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
 /**
+ * Parser for loading files with RAW definitions.
+ *
+ * Parser will create each container/token instance
+ * exactly once. This instance is then stored in the global lookup table, one for
+ * containers and one for tokens. The definitions can be split in multiple files.
+ *
+ * The placeholder instance is created on the first encounter in the XML. It is then
+ * stored in the global lookup table without additional attributes, that might be
+ * loaded from different file in the future.
  *
  * @author Matus Goljer
  * @version 1.0
  */
 public class RawsLoader {
 
+    private static Logger log = Logger.getLogger(RawsLoader.class);
     private Map<String, Container> containers;
     private Map<String, Token> tokens;
+    private Map<String, Id> ids;
 
     public RawsLoader() {
     }
@@ -47,25 +60,70 @@ public class RawsLoader {
         loader.parse("raws.xml");
     }
 
+    /**
+     * Load and parse specified raws definition file.
+     *
+     * New instance of ElementContainer is returned. New instances of underlying
+     * maps are created as well.
+     *
+     * @param file The file to load and parse
+     * @return New instance of ElementContainer with maps of tokens and containers
+     */
     public ElementContainer parse(String file) {
+        return parse(file, null);
+    }
+
+    /**
+     * Load and parse specified raws definition file. If elements is null, only
+     * the content of the current file will be returned. If elements is not null
+     * and contains not-null token and container maps, the content of current
+     * file will be appended as if the definitions were in one file.
+     *
+     * New instance of ElementContainer is returned, but the underlying content
+     * containers are the same instance as supplied one, if supplied. If not, 
+     * new map instances are returned.
+     *
+     * @param file The file to load and parse
+     * @param elements The tuple-container for token and container elements
+     * @return New instance of ElementContainer with maps of tokens and containers
+     */
+    public ElementContainer parse(String file, ElementContainer elements) {
         Document d;
         try {
             SAXReader reader = new SAXReader();
             d = reader.read(file);
         } catch (DocumentException ex) {
-            return null;
+            log.error("Unable to load file:" + file + '.', ex);
+            return elements;
         }
 
-        if (containers != null) {
-            containers.clear();
+        if (elements == null) {
+            containers = new HashMap<String, Container>();
+            tokens = new HashMap<String, Token>();
+            ids = new HashMap<String, Id>();
         }
+        else {
+            if (elements.getContainers() != null) {
+                containers = elements.getContainers();
+            }
+            else {
+                containers = new HashMap<String, Container>();
+            }
 
-        if (tokens != null) {
-            tokens.clear();
+            if (elements.getTokens() != null) {
+                tokens = elements.getTokens();
+            }
+            else {
+                tokens = new HashMap<String, Token>();
+            }
+
+            if (elements.getIds() != null) {
+                ids = elements.getIds();
+            }
+            else {
+                ids = new HashMap<String, Id>();
+            }
         }
-
-        containers = new HashMap<String, Container>();
-        tokens = new HashMap<String, Token>();
 
         Element root = d.getRootElement();
         for (Element e : root.elements()) {
@@ -74,6 +132,9 @@ public class RawsLoader {
             }
             else if ("t".equals(e.getName())) {
                 parseToken(e);
+            }
+            else if ("id".equals(e.getName())) {
+                parseId(e);
             }
         }
 
@@ -85,7 +146,7 @@ public class RawsLoader {
 //            System.out.println(t + "\n");
 //        }
 
-        return new ElementContainer(containers, tokens);
+        return new ElementContainer(containers, tokens, ids);
     }
 
     private Token parseToken(Element e) {
@@ -110,7 +171,7 @@ public class RawsLoader {
         for (Element ce : e.elements()) {
             // add the attribute
             if ("a".equals(ce.getName())) {
-                Argument a = parseArgument(ce);
+                Argument a = parseArgument(ce, name);
                 if (a != null) {
                     if (!clean) {
                         token.getArguments().clear();
@@ -127,7 +188,7 @@ public class RawsLoader {
         return token;
     }
 
-    private Argument parseArgument(Element e) {
+    private Argument parseArgument(Element e, String parentName) {
         String type = e.attributeValue("type");
         if (type == null) {
             return null;
@@ -162,6 +223,16 @@ public class RawsLoader {
         else if ("string".equals(type)) {
             String id = e.attributeValue("id");
             String ref = e.attributeValue("ref");
+
+            if (id != null) {
+                // [NOTE] inline "default" id can only be a flat list.
+                if (!ids.containsKey(id)) {
+                    Id idObject = new Id(id);
+                    ids.put(id, idObject);
+                    // we might load a description later...
+                }
+            }
+
             argument = new Argument(type, id, ref);
         }
 
@@ -195,7 +266,7 @@ public class RawsLoader {
         for (Element ce : e.elements()) {
             // add the attribute
             if ("a".equals(ce.getName())) {
-                Argument a = parseArgument(ce);
+                Argument a = parseArgument(ce, name);
                 if (a != null) {
                     if (!clean) {
                         container.getArguments().clear();
@@ -225,5 +296,58 @@ public class RawsLoader {
             }
         }
         return container;
+    }
+
+    // <id name="ITEM_SUB_ID" from="ITEM_ARMOR" to="ARMOR" id="ITEM_ID"/>
+    public Id parseId(Element e) {
+        String name = e.attributeValue("name");
+
+        if (name == null) {
+            return null;
+        }
+
+        Id id;
+
+        if (ids.containsKey(name)) {
+            id = ids.get(name);
+        }
+        else {
+            id = new Id(name);
+            ids.put(name, id);
+        }
+
+        String description = e.elementText("d");
+        String from = e.attributeValue("from");
+        String to = e.attributeValue("to");
+        String superidName = e.attributeValue("id");
+
+        id.setDescription(description);
+
+
+        if (from != null && to != null) {
+            if (id.getFromToMap() != null && id.getFromToMap().containsKey(from)) {
+                log.warn("From-to map on id " + id.getName() + " already contains key " + from);
+            }
+            id.addFromTo(from, to);
+        }
+        // else...
+        // If from or to are null, the list is flat, so we don't have to set anything
+
+        if (superidName != null) {
+            Id superid;
+
+            if (ids.containsKey(superidName)) {
+                superid = ids.get(superidName);
+            }
+            else {
+                superid = new Id(superidName);
+                ids.put(superidName, superid);
+            }
+
+            // [NOTE] supercategory is always flat!!
+            superid.addItem(to);
+        }
+
+        return id;
     }
 }

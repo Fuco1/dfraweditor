@@ -49,11 +49,10 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 import javax.swing.event.UndoableEditEvent;
-import javax.swing.plaf.TreeUI;
-import javax.swing.plaf.basic.BasicTreeUI;
 import javax.swing.text.AbstractDocument.DefaultDocumentEvent;
 import javax.swing.text.DefaultStyledDocument;
 import javax.swing.undo.UndoManager;
+import org.apache.log4j.Logger;
 
 /**
  *
@@ -62,6 +61,7 @@ import javax.swing.undo.UndoManager;
  */
 public class Main extends JPanel {
 
+    private static Logger log = Logger.getLogger(Main.class);
     private static final String pattern = "(\\[.*?\\])|(.*?\\s+)|(\\d+)"; //"(\\[.*?\\])|(.*?)"; //
     private static Config config;
     private static Autocomplete ac;
@@ -255,6 +255,7 @@ public class Main extends JPanel {
     }
 
     public static void main(String[] args) {
+        log.debug("Start");
         config = new Config();
 
         javax.swing.SwingUtilities.invokeLater(new Runnable() {

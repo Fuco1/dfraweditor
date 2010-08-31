@@ -20,6 +20,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Token represents the directive in the RAW language that can't have any child
+ * directives. Each token can have an ordered list of arguments. It can also
+ * contain no arguments, in which case it is referred to as "flag".
  *
  * @author Matus Goljer
  * @version 1.0
