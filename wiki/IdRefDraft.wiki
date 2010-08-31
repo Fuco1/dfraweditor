@@ -12,19 +12,19 @@ For example, while defining armor, `ITEM_ARMOR` container is used. Referencing i
 
 Some tokens, like `[BODY_DETAIL_PLAN:STANDARD_MATERIALS]` are called the same both in definition and reference. There could be a [http://en.wikipedia.org/wiki/Convention_over_configuration COC] rule to link these by default.
 
-Another issue is, for example in `[REAGENT:A:1:ARMOR:NONE:METAL:NONE]`, the `ARMOR` argument is not the name of the token. By convention, in all raws, the sub-definition follows the "category" (armor, toy, weapon...). While the `<id`> tag only links tokens and containers, we'll need another flag to say "this argument is a reference to category, a sub category follows".
+Another issue is, for example in `[REAGENT:A:1:ARMOR:NONE:METAL:NONE]`, the `ARMOR` argument is not the name of the token. While the `<id`> tag only links tokens and containers, we'll need another flag to say "this argument is a reference to category, a sub category follows".
 
-A simple attribute should fix this problem easily. As arguments are stored in the ORDERED list, it's easy to get "next" argument.
+A simple attribute should fix this problem easily.
 
 {{{
 <a type="string" category="ITEM_ID"/>
 }}}
-Means, the next argument will be
+Means, the next ref argument will be
 {{{
 <a type="string" ref="ITEM_SUB_ID"/>
 }}}
 
-Another benefit is, with the category flag, the argument itself can be inferred from `to` attribute of `<id>` tag.
+Another benefit is, with the category flag, the argument value can be inferred from `to` attribute of `<id>` tag (as in, if the category is "`ITEM_ID`", we can scan all the id definitions belonging to this category and where they point, and this provide user with a list of categories as well)
 
 This is a concern mostly for reactions. I haven't found similar behaviour elsewhere.
 
