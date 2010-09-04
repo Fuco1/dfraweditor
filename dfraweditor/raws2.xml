@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<raws xsi:noNamespaceSchemaLocation="raws.xsd"
+    xmlns=""
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+    <!-- CREATURES  -->
+    <c name="OBJECT:CREATURE">
+        <d>A top level container for all creatures</d>
+        <c name="CREATURE"/>
+    </c>
+
+    <c name="CREATURE">
+        <t name="USE_MATERIAL_TEMPLATE"/>
+    </c>
+
+    <t name="USE_MATERIAL_TEMPLATE">
+        <!-- We look into the string->id map for the key "MATERIAL_TEMPLATE_ID" -->
+        <!-- If found, we can easily get the list of all available items -->
+        <a type="string" ref="MATERIAL_TEMPLATE_ID"/>
+    </t>
+
+    <!-- MATERIAL TEMPLATES -->
+    <c name="OBJECT:MATERIAL_TEMPLATE">
+        <c name="MATERIAL_TEMPLATE"/>
+    </c>
+
+    <c name="MATERIAL_TEMPLATE">
+        <!-- If we found an ID that is not yet defined, we create a new ID object -->
+        <!-- Then we add whatever content of the argument to the list of available items
+        for the given ID -->
+        <a type="string" id="MATERIAL_TEMPLATE_ID"/>
+        <t name="STATE_NAME"/>
+    </c>
+
+    <t name="STATE_NAME">
+        <a type="string"/>
+        <a type="string"/>
+    </t>
+
+    <!-- REACTIONS -->
+    <!-- [REACTION:TRAIN_ARMORSMITHING]
+             [NAME:practice armorsmithing]
+             [BUILDING:TRAINING_WORKSHOP:CUSTOM_A]
+             [REAGENT:A:1:ARMOR:NONE:INORGANIC:NONE][PRESERVE_REAGENT]
+             [REAGENT:B:150:BAR:NONE:METAL:NONE]
+             [REAGENT:C:1:TOY:ITEM_TABLET:NONE:NONE]
+             [PRODUCT:80:1:TOY:ITEM_TABLET:GET_MATERIAL_FROM_REAGENT:C:NONE]
+             [PRODUCT:90:1:BAR:NONE:GET_MATERIAL_FROM_REAGENT:B:NONE]
+             [PRODUCT_DIMENSION:150]
+             [SKILL:FORGE_ARMOR] -->
+    <c name="REACTION">
+        <a type="string" id="REACTION_ID"/>
+        <t name="REAGENT"/>
+        <t name="PRODUCT"/>
+    </c>
+
+    <t name="REAGENT">
+        <a type="string"/>
+        <a type="int"/>
+        <a type="string" ref="ITEM_ID"/>
+        <a type="string" ref="ITEM_SUB_ID"/>
+        <a type="string" ref="MAT_ID"/>
+        <a type="string" ref="MAT_SUB_ID"/>
+    </t>
+
+</raws>
+
+
+<!--    [MATERIAL_TEMPLATE:WOOD_TEMPLATE]
+        [STATE_COLOR:ALL_SOLID:BROWN]
+        [STATE_NAME:ALL_SOLID:wood]-->
