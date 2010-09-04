@@ -21,6 +21,7 @@ import com.bay12games.df.rawedit.xml.KeyWordTypeLoader;
 import com.bay12games.df.rawedit.xml.RawsLoader;
 import com.bay12games.df.rawedit.xml.entities.Container;
 import com.bay12games.df.rawedit.xml.entities.ElementContainer;
+import com.bay12games.df.rawedit.xml.entities.Id;
 import com.bay12games.df.rawedit.xml.entities.Token;
 import java.io.FileReader;
 import java.io.IOException;
@@ -38,6 +39,7 @@ public class Config {
     private Map<String, KeyWordType> keywordTypes;
     private Map<String, Container> containers;
     private Map<String, Token> tokens;
+    private Map<String, Id> ids;
     private Properties properties;
 
     public Config() {

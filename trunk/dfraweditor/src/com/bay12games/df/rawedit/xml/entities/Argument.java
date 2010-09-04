@@ -19,6 +19,17 @@ package com.bay12games.df.rawedit.xml.entities;
 import java.util.Set;
 
 /**
+ * This class represents a single argument of container or token. Each argument
+ * has a type, currently one of the four following:
+ * <ul>
+ * <li>int - for numerical values</li>
+ * <li>string - text strings</li>
+ * <li>enum - a list of allowed string or integer values (treated as strings)</li>
+ * <li>range - a min-max integer range</li>
+ * </ul>
+ *
+ * For simplicity, each argument has all of the properties defined and defaulted
+ * at null or 0.
  *
  * @author Matus Goljer
  * @version 1.0

@@ -1,5 +1,6 @@
 /*
  *  Copyright (C) 2010 Matus Goljer
+ *  Copyleft	  2010 Bruno Zimmermann
  * 
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -16,23 +17,29 @@
  */
 package com.bay12games.df.rawedit.xml;
 
-import com.bay12games.df.rawedit.xml.entities.Argument;
-import com.bay12games.df.rawedit.xml.entities.Container;
-import com.bay12games.df.rawedit.xml.entities.ElementContainer;
-import com.bay12games.df.rawedit.xml.entities.Token;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+
+import org.apache.commons.lang.StringUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
+import com.bay12games.df.rawedit.util.Constants;
+import com.bay12games.df.rawedit.xml.entities.Argument;
+import com.bay12games.df.rawedit.xml.entities.Container;
+import com.bay12games.df.rawedit.xml.entities.ElementContainer;
+import com.bay12games.df.rawedit.xml.entities.Token;
+
 /**
- *
+ * Reads the xml definition files for raw. Also parses them. 
+ * 
  * @author Matus Goljer
- * @version 1.0
+ * @author Bruno Zimmermann
+ * @version 1.1
  */
 public class RawsLoader {
 
@@ -40,40 +47,44 @@ public class RawsLoader {
     private Map<String, Token> tokens;
 
     public RawsLoader() {
+        containers = new HashMap<String, Container>();
+        tokens = new HashMap<String, Token>();
     }
 
-    public static void main(String[] args) {
-        RawsLoader loader = new RawsLoader();
-        loader.parse("raws.xml");
-    }
+
+    /**
+     * Load and parse specified raws definition file.
+     *
+     * New instance of ElementContainer is returned. New instances of underlying
+     * maps are created as well.
+     *
+     * @param file The file to load and parse
+     * @return New instance of ElementContainer with maps of tokens and containers
+     */
 
     public ElementContainer parse(String file) {
-        Document d;
+        Document doc;
         try {
             SAXReader reader = new SAXReader();
-            d = reader.read(file);
+            doc = reader.read(file);
         } catch (DocumentException ex) {
             return null;
         }
 
-        if (containers != null) {
-            containers.clear();
-        }
+        cleanMaps();
 
-        if (tokens != null) {
-            tokens.clear();
-        }
-
-        containers = new HashMap<String, Container>();
-        tokens = new HashMap<String, Token>();
-
-        Element root = d.getRootElement();
-        for (Element e : root.elements()) {
-            if ("c".equals(e.getName())) {
-                parseContainer(e);
+        Element root = doc.getRootElement();
+        for (Element element : root.elements()) {
+        	
+        	if(StringUtils.containsAny(element.getName(), "ct"))
+        	{
+        		parseTokenNode(element);        		
+        	}
+            if ("c".equals(element.getName())) {
+                parseContainer(element);
             }
-            else if ("t".equals(e.getName())) {
-                parseToken(e);
+            else if ("t".equals(element.getName())) {
+                parseToken(element);
             }
         }
 
@@ -88,6 +99,26 @@ public class RawsLoader {
         return new ElementContainer(containers, tokens);
     }
 
+	/**
+	 * Prepares containers and tokens
+	 */
+	private void cleanMaps()
+	{
+            containers.clear();
+            tokens.clear();
+	}
+
+    private Token parseTokenNode(Element element)
+    {
+    	Token token = null;
+    	String name = element.attributeValue(Constants.NODE_ATTRIBUTE_NAME);
+    	return token;
+    }
+    
+    /**
+     * @param e
+     * @return
+     */
     private Token parseToken(Element e) {
         String name = e.attributeValue("name");
 
@@ -126,53 +157,11 @@ public class RawsLoader {
 
         return token;
     }
-
-    private Argument parseArgument(Element e) {
-        String type = e.attributeValue("type");
-        if (type == null) {
-            return null;
-        }
-
-        boolean required = Boolean.parseBoolean(e.attributeValue("required"));
-        Argument argument = null;
-
-        if ("enum".equals(type)) {
-            Set<String> items = new HashSet<String>();
-            for (Element ee : e.elements()) {
-                if ("e".equals(ee.getName())) {
-                    items.add(ee.attributeValue("name"));
-                }
-            }
-            argument = new Argument(type, items);
-        }
-        else if ("range".equals(type)) {
-            int min = 0;
-            int max = 0;
-            try {
-                min = Integer.parseInt(e.attributeValue("min"));
-                max = Integer.parseInt(e.attributeValue("max"));
-                argument = new Argument(type, min, max);
-            } catch (NumberFormatException ex) {
-                return null;
-            }
-        }
-        else if ("int".equals(type)) {
-            argument = new Argument(type);
-        }
-        else if ("string".equals(type)) {
-            String id = e.attributeValue("id");
-            String ref = e.attributeValue("ref");
-            argument = new Argument(type, id, ref);
-        }
-
-        String desc = e.elementText("d");
-        if (desc != null && argument != null) {
-            argument.setDescription(desc);
-        }
-
-        return argument;
-    }
-
+    
+    /**
+     * @param e
+     * @return
+     */
     private Container parseContainer(Element e) {
         String name = e.attributeValue("name");
 
@@ -226,4 +215,58 @@ public class RawsLoader {
         }
         return container;
     }
+    
+    
+
+    /**
+     * @param e
+     * @return
+     */
+    private Argument parseArgument(Element e) {
+        String type = e.attributeValue("type");
+        if (type == null) {
+            return null;
+        }
+
+        boolean required = Boolean.parseBoolean(e.attributeValue("required"));
+        Argument argument = null;
+
+        if ("enum".equals(type)) {
+            Set<String> items = new HashSet<String>();
+            for (Element ee : e.elements()) {
+                if ("e".equals(ee.getName())) {
+                    items.add(ee.attributeValue("name"));
+                }
+            }
+            argument = new Argument(type, items);
+        }
+        else if ("range".equals(type)) {
+            int min = 0;
+            int max = 0;
+            try {
+                min = Integer.parseInt(e.attributeValue("min"));
+                max = Integer.parseInt(e.attributeValue("max"));
+                argument = new Argument(type, min, max);
+            } catch (NumberFormatException ex) {
+                return null;
+            }
+        }
+        else if ("int".equals(type)) {
+            argument = new Argument(type);
+        }
+        else if ("string".equals(type)) {
+            String id = e.attributeValue("id");
+            String ref = e.attributeValue("ref");
+            argument = new Argument(type, id, ref);
+        }
+
+        String desc = e.elementText("d");
+        if (desc != null && argument != null) {
+            argument.setDescription(desc);
+        }
+
+        return argument;
+    }
+
+
 }
