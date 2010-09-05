@@ -16,18 +16,21 @@
  */
 package com.bay12games.df.rawedit;
 
+import com.Main;
 import com.bay12games.df.rawedit.adt.PrefixTree;
-import com.bay12games.df.rawedit.gui.ScrollablePopupMenu;
-import java.awt.Point;
+import com.bay12games.df.rawedit.model.Model;
+import com.bay12games.df.rawedit.model.Node;
+import com.bay12games.df.rawedit.xml.entities.Argument;
+import com.bay12games.df.rawedit.xml.entities.Container;
+import com.bay12games.df.rawedit.xml.entities.Id;
+import com.bay12games.df.rawedit.xml.entities.Token;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-import javax.swing.JTextPane;
-import javax.swing.SwingUtilities;
+import java.util.Map;
 import javax.swing.text.BadLocationException;
-import javax.swing.text.Caret;
 import javax.swing.text.DefaultStyledDocument;
-import javax.swing.text.Element;
+import javax.swing.text.Document;
+import org.apache.log4j.Logger;
 
 /**
  *
@@ -36,87 +39,157 @@ import javax.swing.text.Element;
  */
 public class Autocomplete {
 
-    private PrefixTree trie = new PrefixTree();
+    private static final Autocomplete instance = new Autocomplete();
+    private static final Logger log = Logger.getLogger(Autocomplete.class);
+    private static final ArrayList<String> noSuggestionArray;
 
-    public void build(Set<String> keywords) {
-        for (String k : keywords) {
-            trie.add(k);
-        }
+    static {
+        noSuggestionArray = new ArrayList<String>();
+        noSuggestionArray.add("No suggestions");
     }
 
-    public List<String> hint(String prefix) {
-        PrefixTree subtree = trie.getSubTree(prefix);
+    private Autocomplete() {
+    }
+
+    public static Autocomplete getInstance() {
+        return instance;
+    }
+
+    /**
+     * Build the ordered list of suggestions for given model, document and offset
+     * in the document
+     *
+     * @param model "DOM" of the current document
+     * @param d Document
+     * @param offset Offset in the document
+     * @return Ordered list of suggestions
+     */
+    public List<String> getSuggestionList(final Model model,
+                                          final Document d,
+                                          final int offset) {
+
+        Node node = model.getClosestNodeByStartOffset(offset);
+        if (node == null) {
+            return noSuggestionArray;
+        }
+
+        log.trace(offset);
+        log.trace(node.getStartOffset());
+        log.trace(node.getEndOffset());
+        log.trace(node.getParent().getUserObject().getClass());
+
+        String prefix = null;
+
+        try {
+            if (node.isWhitespace()) {
+                prefix = "";
+            }
+            else {
+                prefix = d.getText(node.getStartOffset(), offset - node.getStartOffset());
+            }
+        } catch (BadLocationException ex) {
+            return noSuggestionArray;
+        }
+
+        PrefixTree suggestions = new PrefixTree();
+
+        // Comment is either a comment or not-finished token definition.
+        // So we treat it as a token if it's inside container, and as an
+        // argument if it's inside token.
+        if (node.isComment()) {
+            Node parent = node.getParent();
+            // first check Container since it's subclass of Token
+            if (parent.getUserObject() instanceof Container) {
+                Container container = (Container) parent.getUserObject();
+                suggestions = container.getSuggestions();
+            }
+            else if (parent.getUserObject() instanceof Token) {
+                int indexOfArgument = parent.getIndex(node);
+                Token t = (Token) parent.getUserObject();
+                Argument a = t.getArgument(indexOfArgument);
+                suggestions = a.getSuggestions();
+            }
+        }
+        else if (node.getUserObject() instanceof Argument) {
+            Argument a = (Argument) node.getUserObject();
+            suggestions = a.getSuggestions();
+        }
+        else if (node.getUserObject() instanceof Token) {
+            Node parent = node.getParent();
+            Object userObject = parent.getUserObject();
+            if (userObject instanceof Container) {
+                Container container = (Container) userObject;
+                suggestions = container.getSuggestions();
+            }
+        }
+
+        PrefixTree subtree = suggestions.getSubTree(prefix);
         List<String> re = new ArrayList<String>();
         if (subtree == null) {
-            re.add("No suggestions");
-            return re;
+            return noSuggestionArray;
         }
         for (String k : subtree.getItems()) {
             re.add(prefix + k);
         }
+        if (re.isEmpty()) {
+            return noSuggestionArray;
+        }
         return re;
     }
 
-    public String getPrefix(final DefaultStyledDocument d, int index) {
-        Element par = d.getParagraphElement(index);
-        int start = par.getStartOffset();
-        int len = par.getEndOffset() - par.getStartOffset();
-        String text = null;
-        try {
-            text = d.getText(start, len);
-        } catch (BadLocationException ex) {
-            return null;
+    public void complete(final DefaultStyledDocument d, final Model model, final int index, String insert) {
+        int nodeIndex = model.getClosestNodeIndexByStartOffset(index);
+        if (nodeIndex == -1) {
+            return;
         }
-        //System.out.println("Paragraph: " + text);
-        String prefix = null;
 
-        TokenIterator ti = new TokenIterator(text);
-        for (String token : ti) {
-            //System.out.println(token);
-            if (start + ti.getTokenStart() <= index && start + ti.getTokenEnd() > index) {
-                // we have the right token
-                //System.out.println("Right token: " + token);
-                prefix = token.substring(0, index - start - ti.getTokenStart());
-                //System.out.println("Prefix: " + prefix);
-                break;
+        Node node = model.getRanges().get(nodeIndex).getUserData();
+
+        Map<String, Container> containers = Main.getConfig().getContainers();
+        Map<String, Token> tokens = Main.getConfig().getTokens();
+        Token c = null;
+        if (containers.containsKey(insert)) {
+            c = containers.get(insert);
+        }
+        else if (tokens.containsKey(insert)) {
+            c = tokens.get(insert);
+        }
+
+        // if we are starting new token, add the closing bracket or colon if apropriate
+        if (c != null) {
+            if (node.getParent().getUserObject() instanceof Container) {
+                if (c.isFlag()) {
+                    insert += ']';
+                }
+                else {
+                    insert += ':';
+                }
             }
         }
-        return prefix;
-    }
 
-    public void showHint(final DefaultStyledDocument d, final JTextPane tp, final ScrollablePopupMenu popup) {
-//        SwingUtilities.invokeLater(new Runnable() {
-//
-//            public void run() {
-        Caret c = tp.getCaret();
-        Point caretPos = c.getMagicCaretPosition();
-        if (caretPos == null) {
-            caretPos = new Point(0, 0);
-        }
-
-        int index = c.getDot();
-        String prefix = getPrefix(d, index);
-
-        popup.replaceItems(hint(prefix));
-        popup.showPopup(caretPos.x, caretPos.y + 15);
-//            }
-//        });
-    }
-
-    public void complete(final DefaultStyledDocument d, final int index, final String insert) {
-//        SwingUtilities.invokeLater(new Runnable() {
-//
-//            public void run() {
-        String prefix = getPrefix(d, index);
-        String insertAtCaret = insert.substring(prefix.length(), insert.length());
-
+        // if we are starting new token, and it's not already prefixed with opening
+        // bracket, add it
         try {
-            d.insertString(index, insertAtCaret, null);
+            if (node.getParent().getUserObject() instanceof Container) {
+                if (!"[".equals(d.getText(node.getStartOffset() - 1, 1))) {
+                    insert = '[' + insert;
+                }
+            }
         } catch (BadLocationException ex) {
+            log.warn("An error occured while completing the text", ex);
         }
 
-        SyntaxHighlighter.highlightParagraph(d, index);
+        int start = node.getStartOffset();
+        int end = node.getEndOffset();
+        try {
+            if (!node.isWhitespace()) {
+                d.replace(start, end - start, insert, null);
+            }
+            else {
+                d.insertString(index, insert, null);
+            }
+        } catch (BadLocationException ex) {
+            log.warn("An error occured while completing the text", ex);
+        }
     }
-//        });
-//    }
 }

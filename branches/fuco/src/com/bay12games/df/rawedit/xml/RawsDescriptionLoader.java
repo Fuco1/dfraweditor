@@ -21,6 +21,7 @@ import com.bay12games.df.rawedit.xml.entities.Container;
 import com.bay12games.df.rawedit.xml.entities.ElementContainer;
 import com.bay12games.df.rawedit.xml.entities.Id;
 import com.bay12games.df.rawedit.xml.entities.Token;
+import java.io.File;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -34,7 +35,7 @@ import org.dom4j.io.SAXReader;
 /**
  * Parser for loading files with RAW definitions.
  *
- * Parser will create each container/token instance
+ * Parser will create each container/token/id instance
  * exactly once. This instance is then stored in the global lookup table, one for
  * containers and one for tokens. The definitions can be split in multiple files.
  *
@@ -45,19 +46,54 @@ import org.dom4j.io.SAXReader;
  * @author Matus Goljer
  * @version 1.0
  */
-public class RawsLoader {
+public class RawsDescriptionLoader {
 
-    private static Logger log = Logger.getLogger(RawsLoader.class);
+    private static final Logger log = Logger.getLogger(RawsDescriptionLoader.class);
     private Map<String, Container> containers;
     private Map<String, Token> tokens;
     private Map<String, Id> ids;
 
-    public RawsLoader() {
+    public RawsDescriptionLoader() {
     }
 
+    // [TEST]
     public static void main(String[] args) {
-        RawsLoader loader = new RawsLoader();
+        RawsDescriptionLoader loader = new RawsDescriptionLoader();
         loader.parse("raws.xml");
+    }
+
+    /**
+     * Load and parse specified raws definition file.
+     *
+     * New instance of ElementContainer is returned. New instances of underlying
+     * maps are created as well.
+     *
+     * @param source Path to the file to load and parse
+     * @return New instance of ElementContainer with maps of tokens and containers
+     */
+    public ElementContainer parse(String source) {
+        return parse(new File(source), null);
+    }
+
+    /**
+     * Load and parse specified raws definition file. If elements is null, only
+     * the content of the current file will be returned. If elements is not null
+     * and contains not-null token and container maps, the content of current
+     * file will be appended as if the definitions were in one file.
+     *
+     * The instances of the underlying containers are preserved.
+     *
+     * <p><strong>Note:</strong> There should be only one global access to the token/container
+     * definitions in the application.
+     *
+     * @param source Path to the file to load and parse
+     * @param elements The tuple-container for token, container and id elements
+     * @return New instance of ElementContainer with maps of tokens and containers if the
+     * supplied ElementContainer was null, or the same instance with updated content.
+     * The supplied instance (possibly null) is returned on error
+     */
+    public ElementContainer parse(String source, ElementContainer elements) {
+        return parse(new File(source), elements);
     }
 
     /**
@@ -69,7 +105,7 @@ public class RawsLoader {
      * @param file The file to load and parse
      * @return New instance of ElementContainer with maps of tokens and containers
      */
-    public ElementContainer parse(String file) {
+    public ElementContainer parse(File file) {
         return parse(file, null);
     }
 
@@ -79,15 +115,18 @@ public class RawsLoader {
      * and contains not-null token and container maps, the content of current
      * file will be appended as if the definitions were in one file.
      *
-     * New instance of ElementContainer is returned, but the underlying content
-     * containers are the same instance as supplied one, if supplied. If not, 
-     * new map instances are returned.
+     * The instances of the underlying containers are preserved.
+     *
+     * <p><strong>Note:</strong> There should be only one global access to the token/container
+     * definitions in the application.
      *
      * @param file The file to load and parse
-     * @param elements The tuple-container for token and container elements
-     * @return New instance of ElementContainer with maps of tokens and containers
+     * @param elements The tuple-container for token, container and id elements
+     * @return New instance of ElementContainer with maps of tokens and containers if the
+     * supplied ElementContainer was null, or the same instance with updated content.
+     * The supplied instance (possibly null) is returned on error
      */
-    public ElementContainer parse(String file, ElementContainer elements) {
+    public ElementContainer parse(File file, ElementContainer elements) {
         Document d;
         try {
             SAXReader reader = new SAXReader();
@@ -101,6 +140,7 @@ public class RawsLoader {
             containers = new HashMap<String, Container>();
             tokens = new HashMap<String, Token>();
             ids = new HashMap<String, Id>();
+            elements = new ElementContainer(containers, tokens, ids);
         }
         else {
             if (elements.getContainers() != null) {
@@ -138,17 +178,16 @@ public class RawsLoader {
             }
         }
 
-//        for (Container c : containers.values()) {
-//            System.out.println(c + "\n");
-//        }
-//
-//        for (Token t : tokens.values()) {
-//            System.out.println(t + "\n");
-//        }
-
-        return new ElementContainer(containers, tokens, ids);
+        return elements;//new ElementContainer(containers, tokens, ids);
     }
 
+    /**
+     * Parse the XML element containing token definition.
+     * 
+     * @param e XML DOM element
+     * @return Parsed token. If the token existed before, returns the same (possibly
+     * altered) instance.
+     */
     private Token parseToken(Element e) {
         String name = e.attributeValue("name");
 
@@ -188,6 +227,14 @@ public class RawsLoader {
         return token;
     }
 
+    /**
+     * Parse the XML element containing token definition.
+     *
+     * @param e XML DOM element
+     * @param parentName Name of the parent element (currently unused - 20100905)
+     * @return Parsed token. If the token existed before, returns the same (possibly
+     * altered) instance.
+     */
     private Argument parseArgument(Element e, String parentName) {
         String type = e.attributeValue("type");
         if (type == null) {
@@ -244,6 +291,13 @@ public class RawsLoader {
         return argument;
     }
 
+    /**
+     * Parse the XML element containing container definition.
+     *
+     * @param e XML DOM element
+     * @return Parsed container. If the container existed before, returns the same (possibly
+     * altered) instance.
+     */
     private Container parseContainer(Element e) {
         String name = e.attributeValue("name");
 
@@ -299,7 +353,14 @@ public class RawsLoader {
     }
 
     // <id name="ITEM_SUB_ID" from="ITEM_ARMOR" to="ARMOR" id="ITEM_ID"/>
-    public Id parseId(Element e) {
+    /**
+     * Parse the XML element containing id definition.
+     *
+     * @param e XML DOM element
+     * @return Parsed id. If the id existed before, returns the same (possibly
+     * altered) instance.
+     */
+    private Id parseId(Element e) {
         String name = e.attributeValue("name");
 
         if (name == null) {
@@ -346,6 +407,7 @@ public class RawsLoader {
 
             // [NOTE] supercategory is always flat!!
             superid.addItem(to);
+            id.setParentName(superidName);
         }
 
         return id;

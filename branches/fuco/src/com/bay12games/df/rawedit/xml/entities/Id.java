@@ -16,9 +16,9 @@
  */
 package com.bay12games.df.rawedit.xml.entities;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -30,6 +30,7 @@ import java.util.Map.Entry;
  */
 public class Id {
 
+    private String parentName;
     private String name;
     private String description;
 //    private String from;
@@ -40,19 +41,24 @@ public class Id {
     /** If there are no categories, this only takes 4 bytes (reference). We
     have separate list for flat categories (no subs) to save time and complexity.
     The key is the "to" value from  the <id> definition. */
-    private Map<String, List<String>> categories;
+    private Map<String, Set<String>> categories;
     /** list of items for flat category (no subs) */
-    private List<String> items;
+    private Set<String> items;
 
     public Id(String name) {
         this.name = name;
     }
 
-    public Map<String, List<String>> getCategories() {
+    public Map<String, Set<String>> getCategories() {
         return categories;
     }
 
-    public List<String> getItems() {
+    /**
+     * Get items from this id, if it's flat.
+     * 
+     * @return The set of possible values for this id/ref
+     */
+    public Set<String> getItems() {
         return items;
     }
 
@@ -60,7 +66,7 @@ public class Id {
         return items == null || items.isEmpty();
     }
 
-    public List<String> getCategory(String name) {
+    public Set<String> getCategory(String name) {
         if (categories != null) {
             return categories.get(name);
         }
@@ -73,7 +79,7 @@ public class Id {
 
     public void addItem(String item) {
         if (items == null) {
-            items = new ArrayList<String>();
+            items = new HashSet<String>();
         }
         items.add(item);
     }
@@ -81,11 +87,12 @@ public class Id {
     // category == to
     public void addItemToCategory(String category, String item) {
         if (categories == null) {
-            categories = new HashMap<String, List<String>>();
+            categories = new HashMap<String, Set<String>>();
         }
-        List<String> cat = categories.get(category);
+        Set<String> cat = categories.get(category);
         if (cat == null) {
-            cat = new ArrayList<String>();
+            cat = new HashSet<String>();
+            categories.put(category, cat);
         }
         cat.add(item);
     }
@@ -118,21 +125,14 @@ public class Id {
           && (fromToMap == null || fromToMap.isEmpty());
     }
 
-//    public String getFrom() {
-//        return from;
-//    }
-//
-//    public void setFrom(String from) {
-//        this.from = from;
-//    }
-//
-//    public String getTo() {
-//        return to;
-//    }
-//
-//    public void setTo(String to) {
-//        this.to = to;
-//    }
+    public String getParentName() {
+        return parentName;
+    }
+
+    public void setParentName(String parentName) {
+        this.parentName = parentName;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -159,7 +159,7 @@ public class Id {
 
             if (categories != null) {
                 sb.append("\n  Sub-categories: ");
-                for (Entry<String, List<String>> entry : categories.entrySet()) {
+                for (Entry<String, Set<String>> entry : categories.entrySet()) {
                     //sb.append(entry.getKey()).append("->").append(entry.getValue());
                     sb.append("\n    Category: ").append(entry.getKey()).append("\n    ");
                     for (String item : entry.getValue()) {

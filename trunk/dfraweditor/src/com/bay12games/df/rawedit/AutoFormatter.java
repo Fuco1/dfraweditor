@@ -1,4 +1,3 @@
-package com.bay12games.df.rawedit;
 ///*
 // *  Copyright (C) 2010 Matus Goljer
 // *

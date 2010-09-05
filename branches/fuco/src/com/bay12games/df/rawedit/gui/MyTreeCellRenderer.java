@@ -14,37 +14,32 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.bay12games.df.rawedit.xml.entities;
+package com.bay12games.df.rawedit.gui;
 
-import java.util.Map;
+import com.bay12games.df.rawedit.model.Node;
+import java.awt.Component;
+import javax.swing.JTree;
+import javax.swing.tree.DefaultTreeCellRenderer;
 
 /**
- * Simple tuple class to hold container and token definitions.
  *
  * @author Matus Goljer
  * @version 1.0
  */
-public class ElementContainer {
+public class MyTreeCellRenderer extends DefaultTreeCellRenderer {
 
-    private Map<String, Container> containers;
-    private Map<String, Token> tokens;
-    private Map<String, Id> ids;
+    @Override
+    public Component getTreeCellRendererComponent(JTree tree, Object value,
+                                                  boolean sel, boolean expanded,
+                                                  boolean leaf, int row,
+                                                  boolean hasFocus) {
+        Node node = (Node) value;
+        if (!node.isWhitespace()) {
+            return this;
+        }
+        else {
+            return null;
+        }
 
-    public ElementContainer(Map<String, Container> containers, Map<String, Token> tokens, Map<String, Id> ids) {
-        this.containers = containers;
-        this.tokens = tokens;
-        this.ids = ids;
-    }
-
-    public Map<String, Container> getContainers() {
-        return containers;
-    }
-
-    public Map<String, Token> getTokens() {
-        return tokens;
-    }
-
-    public Map<String, Id> getIds() {
-        return ids;
     }
 }

@@ -14,37 +14,34 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.bay12games.df.rawedit.xml.entities;
+package com.bay12games.df.rawedit.gui;
 
-import java.util.Map;
+import java.util.ArrayList;
+import javax.swing.JTextPane;
+import javax.swing.text.DefaultStyledDocument;
 
 /**
- * Simple tuple class to hold container and token definitions.
  *
  * @author Matus Goljer
  * @version 1.0
  */
-public class ElementContainer {
+public class RawDocument extends DefaultStyledDocument {
 
-    private Map<String, Container> containers;
-    private Map<String, Token> tokens;
-    private Map<String, Id> ids;
+    private ArrayList<JTextPane> attachedTo = new ArrayList<JTextPane>();
 
-    public ElementContainer(Map<String, Container> containers, Map<String, Token> tokens, Map<String, Id> ids) {
-        this.containers = containers;
-        this.tokens = tokens;
-        this.ids = ids;
+    public RawDocument() {
+        super();
     }
 
-    public Map<String, Container> getContainers() {
-        return containers;
+    public ArrayList<JTextPane> getAttachedTo() {
+        return attachedTo;
     }
 
-    public Map<String, Token> getTokens() {
-        return tokens;
+    public void clear() {
+        attachedTo.clear();
     }
 
-    public Map<String, Id> getIds() {
-        return ids;
+    public boolean add(JTextPane e) {
+        return attachedTo.add(e);
     }
 }

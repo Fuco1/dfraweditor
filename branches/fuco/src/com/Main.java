@@ -20,37 +20,56 @@ import com.bay12games.df.rawedit.Autocomplete;
 import com.bay12games.df.rawedit.Config;
 import com.bay12games.df.rawedit.DocumentLoader;
 import com.bay12games.df.rawedit.SyntaxHighlightDocumentListener;
+import com.bay12games.df.rawedit.SyntaxHighlighter;
+import com.bay12games.df.rawedit.adt.Range;
+import com.bay12games.df.rawedit.gui.ModelJTree;
+import com.bay12games.df.rawedit.gui.RawDocument;
 import com.bay12games.df.rawedit.gui.RedoAction;
 import com.bay12games.df.rawedit.gui.ScrollablePopupMenu;
 import com.bay12games.df.rawedit.gui.UndoAction;
 import com.bay12games.df.rawedit.model.Model;
-import com.bay12games.df.rawedit.model.Node;
-import com.bay12games.df.rawedit.xml.entities.Argument;
-import com.bay12games.df.rawedit.xml.entities.Token;
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 import javax.swing.Action;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
+import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.JTextPane;
 import javax.swing.JTree;
+import javax.swing.JWindow;
 import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
+import javax.swing.ToolTipManager;
 import javax.swing.event.DocumentEvent;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.text.AbstractDocument.DefaultDocumentEvent;
-import javax.swing.text.DefaultStyledDocument;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Caret;
+import javax.swing.text.Segment;
 import javax.swing.undo.UndoManager;
 import org.apache.log4j.Logger;
 
@@ -61,64 +80,93 @@ import org.apache.log4j.Logger;
  */
 public class Main extends JPanel {
 
-    private static Logger log = Logger.getLogger(Main.class);
-    private static final String pattern = "(\\[.*?\\])|(.*?\\s+)|(\\d+)"; //"(\\[.*?\\])|(.*?)"; //
+    private static final Logger log = Logger.getLogger(Main.class);
     private static Config config;
-    private static Autocomplete ac;
 
     public static Config getConfig() {
         return config;
     }
 
+    // [TODO] Move from constructor to createAndShowGUI()!
     public Main() {
         super(new BorderLayout());
+        final Autocomplete ac = Autocomplete.getInstance();
+
+        // window for descriptions
+        final JWindow window = new JWindow();
+        final JTextArea descriptionArea = new JTextArea();
+        descriptionArea.setBackground(new Color(240, 240, 240));
+        descriptionArea.setEditable(false);
+        descriptionArea.setLineWrap(true);
+        descriptionArea.setWrapStyleWord(true);
+        final JScrollPane descriptionAreaPane = new JScrollPane(descriptionArea);
+        window.setLayout(new GridBagLayout());
+
+        GridBagConstraints c = new GridBagConstraints();
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        c.fill = GridBagConstraints.BOTH;
+        c.weightx = 1.0;
+        c.weighty = 1.0;
+        window.add(descriptionAreaPane, c);
+        window.setPreferredSize(new Dimension(300, 150));
+        window.pack();
+        // window end
 
         // prepare document and keyword stuff
-        final DefaultStyledDocument d = DocumentLoader.load("testraw.txt");
-        d.addDocumentListener(new SyntaxHighlightDocumentListener(config));
-        ac = new Autocomplete();
-        //ac.build(config.getKeywords().keySet());
+        RawDocument d1 = null;
+        try {
+            d1 = DocumentLoader.load("testraw.txt");
+        } catch (IOException ex) {
+            log.error(ex.getMessage(), ex);
+            System.exit(2);
+        }
 
-        Model model = DocumentLoader.buildModel(d);
+        final RawDocument d = d1;
 
-        final JTree tree = new JTree(model) {
+        SyntaxHighlightDocumentListener dl = new SyntaxHighlightDocumentListener(config);
+        d.addDocumentListener(dl);
 
-            @Override
-            public String convertValueToText(Object value, boolean selected, boolean expanded, boolean leaf, int row, boolean hasFocus) {
-                Node node = (Node) value;
-                if (node.getUserObject() instanceof String) {
-                    return (String) node.getUserObject();
-                }
-                else if (node.getUserObject() instanceof Argument) {
-                    Argument argument = (Argument) node.getUserObject();
-                    return argument.getType();
-                }
-                Token token = (Token) node.getUserObject();
-                return token.getName();
-            }
-        };
+        // build model
+        log.debug("Building initial model: " + System.currentTimeMillis());
+        Model model = null;
+        try {
+            model = DocumentLoader.buildModel(d.getText(0, d.getLength()));
+        } catch (BadLocationException ex) {
+        }
+        log.debug(System.currentTimeMillis());
+        Config.getInstance().setModel(model);
 
+        final JTree tree = new ModelJTree(model);
+        // expand all treenodes
+        int row = 0;
+        while (row < tree.getRowCount()) {
+            tree.expandRow(row);
+            row++;
+        }
         tree.setRootVisible(false);
-        //tree.setPreferredSize(new Dimension(200, 600));
 
         final JTextPane text = new JTextPane();
 
-        final ScrollablePopupMenu popup = new ScrollablePopupMenu(); //ac.hint("").toArray()
-        popup.addActionListener(new ActionListener() {
+        final ScrollablePopupMenu popup = new ScrollablePopupMenu();
+        popup.addActionListener(
+          new ActionListener() {
 
-            public void actionPerformed(ActionEvent e) {
-                if (popup.getSelectedItem() != null) {
-                    String selectedItemText = popup.getSelectedItem().toString();
-                    if (!selectedItemText.equals("No suggestions")) {
-                        System.out.println("Selected item: " + selectedItemText);
-                        ac.complete(d, text.getCaretPosition(), selectedItemText);
-                    }
-                }
-            }
-        });
+              @Override
+              public void actionPerformed(ActionEvent e) {
+                  if (popup.getSelectedItem() != null) {
+                      String selectedItemText = popup.getSelectedItem().toString();
+                      if (!selectedItemText.equals("No suggestions")) {
+                          System.out.println("Selected item: " + selectedItemText);
+                          //ac.complete(d, text.getCaretPosition(), selectedItemText);
+                          ac.complete(d, config.getModel(), text.getCaretPosition(), selectedItemText);
+                      }
+                  }
+              }
+          });
 
         popup.addPopupMenuListener(new PopupMenuListener() {
 
+            @Override
             public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
                 JComboBox box = (JComboBox) e.getSource();
                 Object comp = box.getUI().getAccessibleChild(box, 0);
@@ -127,19 +175,37 @@ public class Main extends JPanel {
                 }
                 JComponent scrollPane = (JComponent) ((JPopupMenu) comp).getComponent(0);
                 Dimension size = new Dimension();
-                size.width = 200;//box.getPreferredSize().width;
+                size.width = 200;
                 size.height = scrollPane.getPreferredSize().height;
                 scrollPane.setPreferredSize(size);
             }
 
+            @Override
             public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
+                window.setVisible(false);
             }
 
+            @Override
             public void popupMenuCanceled(PopupMenuEvent e) {
+                window.setVisible(false);
             }
         });
 
+        popup.addListSelectionListener(new ListSelectionListener() {
 
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                if (window.isVisible()) {
+                    String element = (String) ((JList) e.getSource()).getSelectedValue();
+                    descriptionArea.setText(config.getDescriptionForElement(text.getCaretPosition(), element));
+                }
+            }
+        });
+
+        // [TODO] find a better SAFE solution (we can forget to add the
+        // pane to the document and break deattaching on edits
+        // [WARNING] not curently used
+        d.add(text);
         text.setDocument(d);
 
         // hacky undo manager
@@ -161,6 +227,7 @@ public class Main extends JPanel {
         Action undoAction = new UndoAction(manager);
         Action redoAction = new RedoAction(manager);
 
+        // [TODO] MOVE TO CONFIG!
         text.setFont(new Font("Lucida Console", 0, 12));
 
         text.registerKeyboardAction(undoAction, KeyStroke.getKeyStroke(
@@ -172,8 +239,6 @@ public class Main extends JPanel {
 
             private void updatePopup(KeyEvent e) {
                 if (popup.isVisible()) {
-//                    System.out.println(KeyEvent.getKeyText(e.getKeyCode()));
-//                    popup.dispatchEvent(e);
                     switch (e.getKeyCode()) {
                         case KeyEvent.VK_DOWN:
                         case KeyEvent.VK_UP:
@@ -186,7 +251,6 @@ public class Main extends JPanel {
                             popup.dispatchEvent(e);
                             break;
                     }
-
                 }
             }
 
@@ -197,20 +261,42 @@ public class Main extends JPanel {
                     switch (e.getKeyCode()) {
                         case KeyEvent.VK_SPACE:
                             if ((e.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) > 0) {
-                                System.out.println("EVENT");
-                                ac.showHint(d, text, popup);
+                                log.trace("Key event in JTextPane - invoke AC suggestion dialog");
+                                Caret c = text.getCaret();
+                                Point caretPos = c.getMagicCaretPosition();
+                                if (caretPos == null) {
+                                    caretPos = new Point(0, 0);
+                                }
+
+                                int index = c.getDot();
+
+                                List<String> sug = ac.getSuggestionList(config.getModel(), d, index);
+                                popup.replaceItems(sug);
+                                popup.showPopup(caretPos.x, caretPos.y + 15);
+                                Point p = popup.getLocationOnScreen();
+                                descriptionArea.setText(config.getDescriptionForElement(index, sug.get(0)));
+                                //[TODO] better way to figure out height? Maybe we should place it over the list anyway...
+                                window.setLocation(p.x, p.y + (int) popup.getPopup().getList().getVisibleRect().getHeight());
+                                window.setVisible(true);
                                 processed = true;
                             }
                             break;
+                        // THIS IS NOT SAFE UNDER EVERY LAF!
+                        // [TODO]: Find a proper way to determine the cursor has moved.
+                        // [TODO]: Find a way to detect typing and deleting of characters
                         case KeyEvent.VK_LEFT:
                         case KeyEvent.VK_RIGHT:
                             if (!popup.isVisible()) {
                                 break;
                             }
                             int index = text.getCaretPosition() + (e.getKeyCode() == KeyEvent.VK_LEFT ? -1 : 1);
-                            String prefix = ac.getPrefix(d, index);
-                            popup.replaceItems(ac.hint(prefix));
+                            List<String> sug = ac.getSuggestionList(config.getModel(), d, index);
+                            popup.replaceItems(sug);
                             popup.updatePopup();
+                            descriptionArea.setText(config.getDescriptionForElement(index, sug.get(0)));
+                            Point p = popup.getLocationOnScreen();
+                            window.setLocation(p.x, p.y + (int) popup.getPopup().getList().getVisibleRect().getHeight());
+                            window.setVisible(true);
                             break;
                     }
                 }
@@ -221,45 +307,82 @@ public class Main extends JPanel {
         });
 
         final JScrollPane scrollpane = new JScrollPane(text);
+
         final JScrollPane treeScrollpane = new JScrollPane(tree);
         treeScrollpane.setPreferredSize(new Dimension(300, 600));
 
-//        add("West", scrollpane);
-//        add("East", treeScrollpane);
-//        add("North", popup);
         add(popup, BorderLayout.PAGE_START);
         add(scrollpane, BorderLayout.CENTER);
         add(treeScrollpane, BorderLayout.LINE_END);
-        setPreferredSize(new Dimension(600, 600));
+        setPreferredSize(new Dimension(700, 600));
 
-//        KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(new KeyEventDispatcher() {
-//
-//            public boolean dispatchKeyEvent(KeyEvent e) {
-//                boolean discardEvent = false;
-//
-//                if (e.getID() == KeyEvent.KEY_PRESSED) {
-//                    switch (e.getKeyCode()) {
-//                        case KeyEvent.VK_SPACE:
-//                            if ((e.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) > 0) {
-//                                discardEvent = true;
-//                                ac.showHint((DefaultStyledDocument) d, text, popup);
-//                            }
-//                            break;
-//                        case KeyEvent.VK_F:
-//                            break;
-//                    }
-//                }
-//                return discardEvent;
-//            }
-//        });
+        long time = System.currentTimeMillis();
+        log.trace("Initial highlight");
+        SyntaxHighlighter.highlight(d, 0, d.getLength());
+        log.trace("Initial highlight done " + (System.currentTimeMillis() - time));
+
+        Timer modelBuildingTimer = new Timer("modelBuildingTimer", true);
+        TimerTask buildModelAndFixHighlight = new TimerTask() {
+
+            @Override
+            public void run() {
+                try {
+                    // should be faster then pulling all the text at once.
+                    StringBuilder sb = new StringBuilder();
+                    int nleft = d.getLength();
+                    Segment seg = new Segment();
+                    int offs = 0;
+                    seg.setPartialReturn(true);
+                    while (nleft > 0) {
+                        d.getText(offs, nleft, seg);
+                        sb.append(seg.toString());
+                        nleft -= seg.count;
+                        offs += seg.count;
+                    }
+                    String data = sb.toString();
+
+                    Model model = DocumentLoader.buildModel(data);
+                    // [WARNING] Possibly thread-unsafe
+                    config.setModel(model);
+                    // [TODO] Change buffer must be able to handle multiple documents
+                    final ArrayList<Range> changes = config.getChangeBuffer().mergeAndClear();
+
+                    // Fix the GUI on EDT
+                    SwingUtilities.invokeLater(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            // [TODO] Fix visual tree as well
+                            long time = System.currentTimeMillis();
+                            if (!changes.isEmpty()) {
+                                log.trace("Fixing highlight");
+                                for (Range range : changes) {
+                                    SyntaxHighlighter.highlight(d, range.getBottom(), range.getTop() - range.getBottom());
+                                }
+                                log.trace("Done fixing highlight " + (System.currentTimeMillis() - time));
+                            }
+                        }
+                    });
+
+
+                } catch (Exception ex) {
+                    log.error("An error occured in timer thread!", ex);
+                }
+            }
+        };
+
+        // schedule the timer
+        modelBuildingTimer.schedule(buildModelAndFixHighlight, 1000, 500);
     }
 
     public static void main(String[] args) {
-        log.debug("Start");
-        config = new Config();
+        log.info("Start");
+        config = Config.getInstance();
 
-        javax.swing.SwingUtilities.invokeLater(new Runnable() {
 
+        SwingUtilities.invokeLater(new Runnable() {
+
+            @Override
             public void run() {
                 JFrame frame = new JFrame("Dwarf Fortress RAW editor");
                 frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -268,5 +391,7 @@ public class Main extends JPanel {
                 frame.setVisible(true);
             }
         });
+
+        log.info("Session closed");
     }
 }

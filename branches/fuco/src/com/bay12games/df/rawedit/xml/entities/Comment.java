@@ -16,35 +16,20 @@
  */
 package com.bay12games.df.rawedit.xml.entities;
 
-import java.util.Map;
-
 /**
- * Simple tuple class to hold container and token definitions.
  *
  * @author Matus Goljer
  * @version 1.0
  */
-public class ElementContainer {
+public class Comment {
 
-    private Map<String, Container> containers;
-    private Map<String, Token> tokens;
-    private Map<String, Id> ids;
+    private String comment;
 
-    public ElementContainer(Map<String, Container> containers, Map<String, Token> tokens, Map<String, Id> ids) {
-        this.containers = containers;
-        this.tokens = tokens;
-        this.ids = ids;
+    public Comment(String comment) {
+        this.comment = comment;
     }
 
-    public Map<String, Container> getContainers() {
-        return containers;
-    }
-
-    public Map<String, Token> getTokens() {
-        return tokens;
-    }
-
-    public Map<String, Id> getIds() {
-        return ids;
+    public String getComment() {
+        return comment;
     }
 }

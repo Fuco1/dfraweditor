@@ -25,6 +25,8 @@ import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.event.ListDataEvent;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.plaf.basic.BasicComboBoxUI;
 import javax.swing.plaf.basic.ComboPopup;
 
@@ -81,6 +83,10 @@ public class ScrollablePopupMenu extends JComboBox {
         });
         setPreferredSize(new Dimension(0, 0));
         setVisible(true);
+    }
+
+    public void addListSelectionListener(ListSelectionListener listener) {
+        getPopup().getList().addListSelectionListener(listener);
     }
 
     /**
