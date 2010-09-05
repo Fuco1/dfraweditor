@@ -16,10 +16,18 @@
  */
 package com.bay12games.df.rawedit.xml.entities;
 
+import com.bay12games.df.rawedit.adt.PrefixTree;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * Container is a special kind of token that can hold other tokens and containers,
+ * not just arguments.
+ *
+ * Each container holds the list of allowed sub-containers and tokens.
+ *
+ * TODO: The required arguments/containers/tokens are not handled in any way. The
+ * XML format however can specify the required attribute.
  *
  * @author Matus Goljer
  * @version 1.0
@@ -81,6 +89,16 @@ public class Container extends Token {
             tokens = new HashMap<String, Token>();
         }
         return tokens;
+    }
+
+    /**
+     * @return PrefixTree representing all valid tags that can appear inside this container
+     */
+    public PrefixTree getSuggestions() {
+        PrefixTree tree = new PrefixTree();
+        tree.add(getContainers().keySet());
+        tree.add(getTokens().keySet());
+        return tree;
     }
 
     @Override

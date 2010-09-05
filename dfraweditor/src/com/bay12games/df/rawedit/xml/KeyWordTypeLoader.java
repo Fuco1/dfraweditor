@@ -17,6 +17,7 @@
 package com.bay12games.df.rawedit.xml;
 
 import java.awt.Color;
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import javax.swing.text.MutableAttributeSet;
@@ -24,29 +25,56 @@ import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 /**
+ * Class responsbile for loading the color and font definitions of various keyword
+ * types.
  *
  * @author Matus Goljer
  * @version 1.0
  */
-public class KeyWordTypeLoader {
+//[TODO]: should be refactored to use dom4j parser
+public final class KeyWordTypeLoader {
 
-    private static String getAtributeValue(Node node, String string) {
-        return node.getAttributes().getNamedItem(string).getTextContent();
+    private static final Logger log = Logger.getLogger(KeyWordTypeLoader.class);
+
+    private KeyWordTypeLoader() {
     }
 
-    public Map<String, KeyWordType> load(String source) {
+    /**
+     * Load the color and font definitions for keyword types (token, container, flag,
+     * number...).
+     *
+     * @param source Path to the source
+     * @return Map of type names to the corresponding {@code KeyWordType} instances
+     */
+    public static Map<String, KeyWordType> load(String source) {
+        if (source == null) {
+            log.error("An error occured while loading \"KeyWordType\" xml configuration: The source String is null");
+            return null;
+        }
+        return load(new File(source));
+    }
+
+    /**
+     * Load the color and font definitions for keyword types (token, container, flag,
+     * number...).
+     *
+     * @param source Instance of the file object specifying the source
+     * @return Map of type names to the corresponding {@code KeyWordType} instances
+     */
+    public static Map<String, KeyWordType> load(File source) {
         Document document;
         try {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = factory.newDocumentBuilder();
             document = builder.parse(source);
         } catch (Exception ex) {
-            System.err.println("An error occured while loading \"KeyWordType\" xml configuration");
+            log.error("An error occured while loading \"KeyWordType\" xml configuration", ex);
             return null;
         }
 
@@ -98,7 +126,7 @@ public class KeyWordTypeLoader {
                 re.put(id, new KeyWordType(id, as));
             }
             else {
-                System.err.println("Error loading type: No id found");
+                log.warn("Error loading type: No id found");
             }
         }
 
