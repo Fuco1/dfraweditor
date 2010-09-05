@@ -16,12 +16,12 @@
  */
 package com.bay12games.df.rawedit;
 
-import javax.swing.SwingUtilities;
+import com.bay12games.df.rawedit.adt.Range;
+import com.bay12games.df.rawedit.gui.RawDocument;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.Element;
+import org.apache.log4j.Logger;
 
 /**
  *
@@ -30,53 +30,46 @@ import javax.swing.text.Element;
  */
 public class SyntaxHighlightDocumentListener implements DocumentListener {
 
+    private static final Logger log = Logger.getLogger(SyntaxHighlightDocumentListener.class);
     private Config config;
 
     public SyntaxHighlightDocumentListener(Config config) {
         this.config = config;
     }
 
-    private void update(DocumentEvent e) {
-        final DefaultStyledDocument d = (DefaultStyledDocument) e.getDocument();
+    private void update(final DocumentEvent e) {
+        final RawDocument d = (RawDocument) e.getDocument();
         final int offset = e.getOffset();
         final int length = e.getLength();
-        
-        SwingUtilities.invokeLater(new Runnable() {
 
-            public void run() {
-                try {
-                    Element parStart = d.getParagraphElement(offset);
-                    int start = parStart.getStartOffset();
-                    int len = parStart.getEndOffset() - parStart.getStartOffset();
-                    //System.out.println("Paragraph start: " + d.getText(start, len));
+        Element parStart = d.getParagraphElement(offset);
+        int start = parStart.getStartOffset();
+        int len = parStart.getEndOffset() - parStart.getStartOffset();
+        //log.trace("Paragraph start: " + d.getText(start, len));
 
-                    Element parEnd = d.getParagraphElement(offset + length);
-                    int startE = parEnd.getStartOffset();
-                    int lenE = parEnd.getEndOffset() - parEnd.getStartOffset();
-                    //System.out.println("Paragraph end: " + d.getText(startE, lenE));
-                    
-                    int blockLength = startE + lenE - start;
+        Element parEnd = d.getParagraphElement(offset + length);
+        int startE = parEnd.getStartOffset();
+        int lenE = parEnd.getEndOffset() - parEnd.getStartOffset();
+        //log.trace("Paragraph end: " + d.getText(startE, lenE));
 
-                    String t = d.getText(start, blockLength);
-                    //System.out.println("Modifying tokens: " + t);
+        int blockLength = startE + lenE - start;
 
-                    SyntaxHighlighter.reset(d, start, blockLength);
-                    SyntaxHighlighter.highlight(d, start, blockLength);
-                } catch (BadLocationException ex) {
-                }
-            }
-        });
+        //String t = d.getText(start, blockLength);
+        //log.trace("Modifying tokens: " + t);
+        config.getChangeBuffer().add(new Range(start, start + blockLength));
     }
 
+    @Override
     public void insertUpdate(DocumentEvent e) {
         update(e);
     }
 
+    @Override
     public void removeUpdate(DocumentEvent e) {
         update(e);
     }
 
+    @Override
     public void changedUpdate(DocumentEvent e) {
-        //  update(e);
     }
 }

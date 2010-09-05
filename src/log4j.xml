@@ -38,7 +38,7 @@
     </appender>
 
     <category name="com.bay12games.df">
-        <priority value="trace"/>
+        <priority value="debug"/>
     </category>
 
     <root>

@@ -16,6 +16,8 @@
  */
 package com.bay12games.df.rawedit.xml.entities;
 
+import com.Main;
+import com.bay12games.df.rawedit.adt.PrefixTree;
 import java.util.Set;
 
 /**
@@ -95,6 +97,34 @@ public class Argument {
 
     public int getMin() {
         return min;
+    }
+
+    /**
+     * @return PrefixTree representing all valid values that can appear inside this argument.
+     * No suggestions are returned for type range and string (which is not ref). 0 is returned for
+     * type int.
+     */
+    public PrefixTree getSuggestions() {
+        PrefixTree suggestions = new PrefixTree();
+        if (getRef() != null) {
+            Id idOb = Main.getConfig().getIds().get(getRef());
+            suggestions.add(idOb.getItems());
+        }
+        else if ("enum".equals(getType())) {
+            suggestions.add(getEnumItems());
+        }
+        else if ("int".equals(getType())) {
+            suggestions.add("0");
+        }
+        return suggestions;
+    }
+
+    public PrefixTree getSuggestions(Token owner) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    public PrefixTree getSuggestions(Argument previousArgument) {
+        throw new UnsupportedOperationException("Not yet implemented");
     }
 
     @Override

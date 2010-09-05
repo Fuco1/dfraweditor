@@ -18,6 +18,7 @@ package com.bay12games.df.rawedit.adt;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -61,6 +62,12 @@ public class PrefixTree {
             PrefixTree child = new PrefixTree();
             children.put(index, child);
             child.add(entity.substring(1));
+        }
+    }
+
+    public void add(Collection<String> entities) {
+        for (String s : entities) {
+            add(s);
         }
     }
 

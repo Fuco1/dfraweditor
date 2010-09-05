@@ -16,6 +16,7 @@
  */
 package com.bay12games.df.rawedit.xml.entities;
 
+import com.bay12games.df.rawedit.adt.PrefixTree;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -88,6 +89,16 @@ public class Container extends Token {
             tokens = new HashMap<String, Token>();
         }
         return tokens;
+    }
+
+    /**
+     * @return PrefixTree representing all valid tags that can appear inside this container
+     */
+    public PrefixTree getSuggestions() {
+        PrefixTree tree = new PrefixTree();
+        tree.add(getContainers().keySet());
+        tree.add(getTokens().keySet());
+        return tree;
     }
 
     @Override
