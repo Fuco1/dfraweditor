@@ -10,13 +10,17 @@
     </c>
 
     <c name="CREATURE">
+        <a type="string"/>
         <t name="USE_MATERIAL_TEMPLATE"/>
+        <t name="NAME"/>
     </c>
 
     <t name="USE_MATERIAL_TEMPLATE">
+<!--        local name-->
+        <a type="string"/>
         <!-- We look into the string->id map for the key "MATERIAL_TEMPLATE_ID" -->
         <!-- If found, we can easily get the list of all available items -->
-        <a type="string" ref="MATERIAL_TEMPLATE_ID"/>
+        <a type="string" ref="MATERIAL_TEMPLATE_ID"/> 
     </t>
 
     <!-- MATERIAL TEMPLATES -->

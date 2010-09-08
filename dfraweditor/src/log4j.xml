@@ -38,6 +38,10 @@
     </appender>
 
     <category name="com.bay12games.df">
+        <priority value="trace"/>
+    </category>
+
+    <category name="com.bay12games.df.rawedit.DocumentLoader">
         <priority value="debug"/>
     </category>
 
