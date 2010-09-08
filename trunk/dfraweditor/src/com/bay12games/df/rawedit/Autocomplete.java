@@ -18,11 +18,11 @@ package com.bay12games.df.rawedit;
 
 import com.Main;
 import com.bay12games.df.rawedit.adt.PrefixTree;
+import com.bay12games.df.rawedit.adt.Range;
 import com.bay12games.df.rawedit.model.Model;
 import com.bay12games.df.rawedit.model.Node;
 import com.bay12games.df.rawedit.xml.entities.Argument;
 import com.bay12games.df.rawedit.xml.entities.Container;
-import com.bay12games.df.rawedit.xml.entities.Id;
 import com.bay12games.df.rawedit.xml.entities.Token;
 import java.util.ArrayList;
 import java.util.List;
@@ -68,7 +68,12 @@ public class Autocomplete {
                                           final Document d,
                                           final int offset) {
 
-        Node node = model.getClosestNodeByStartOffset(offset);
+        int nodeIndex = model.getClosestNodeIndexByStartOffset(offset);
+        Node node = null;
+        if (nodeIndex > 0) {
+            node = model.getRanges().get(nodeIndex).getUserData();
+        }
+        //Node node = model.getClosestNodeByStartOffset(offset);
         if (node == null) {
             return noSuggestionArray;
         }
@@ -107,12 +112,17 @@ public class Autocomplete {
                 int indexOfArgument = parent.getIndex(node);
                 Token t = (Token) parent.getUserObject();
                 Argument a = t.getArgument(indexOfArgument);
-                suggestions = a.getSuggestions();
+                suggestions = a.getSuggestions(t, indexOfArgument,
+                  getFullTokenList(t.getArgumentSize(), nodeIndex, indexOfArgument));
             }
         }
         else if (node.getUserObject() instanceof Argument) {
             Argument a = (Argument) node.getUserObject();
-            suggestions = a.getSuggestions();
+            Node parent = node.getParent();
+            Token t = (Token) parent.getUserObject();
+            int indexOfArgument = parent.getIndex(node);
+            suggestions = a.getSuggestions(t, indexOfArgument,
+              getFullTokenList(t.getArgumentSize(), nodeIndex, indexOfArgument));
         }
         else if (node.getUserObject() instanceof Token) {
             Node parent = node.getParent();
@@ -133,6 +143,21 @@ public class Autocomplete {
         }
         if (re.isEmpty()) {
             return noSuggestionArray;
+        }
+        return re;
+    }
+
+    private String[] getFullTokenList(int numberOfArgs, int currentRangeIndex, int currentArgIndex) {
+        String[] re = new String[numberOfArgs + 1];
+        int index = currentRangeIndex - currentArgIndex - 1;
+        Model model = Config.getInstance().getModel();
+        ArrayList<Range<Node>> ranges = model.getRanges();
+        re[0] = ranges.get(index).getUserData().getText();
+        for (int i = 1; i < numberOfArgs + 1; i++) {
+            if (ranges.get(index + i).getUserData().isComment()) {
+                break;
+            }
+            re[i] = ranges.get(index + i).getUserData().getText();
         }
         return re;
     }

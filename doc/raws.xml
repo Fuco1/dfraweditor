@@ -5,11 +5,11 @@
         
 <!--
 elements:
-c = container, can contain other containers and tokens
-t = token, a single directive, contains at least one attribute
-a = attribute
+c = container, can contain other containers, tokens and arguments
+t = token, a single directive, may contain arguments
+a = argument
 e = element of enum
-d = description of the container/token/flag/attribute
+d = description of the container/token/argument
 
 attributes:
 name = the "RAW" name of the RAW
@@ -18,13 +18,24 @@ id   = if true, the attribute is logic id of the object
 required = the attribute is required
 -->
 
+    <id name="ITEM_SUB_ID" from="ITEM_ARMOR" to="ARMOR" id="ITEM_ID"/>
+    <id name="ITEM_SUB_ID" from="ITEM_WEAPON" to="WEAPON" id="ITEM_ID"/>
+    
     <c name="OBJECT:ITEM">
         <d>A top level container for all items</d>
         <c name="ITEM_ARMOR"/>
     </c>
 
     <c name="ITEM_ARMOR">
-        <a type="string" id="ITEM_ARMOR_ID"/>
+        <!-- Here's an ID argument. We already see the id "ITEM_SUB_ID" is defined 
+        to be a sub-category of an ITEM_ID category. This particular argument is
+        referencing "ARMOR" sub-category, since we're in ITEM_ARMOR container, which
+        is mapped to "ARMOR" category.
+
+        In java, ITEM_SUB_ID has several lists (a map of lists) for each sub-category
+        defined by the "to" attribute"
+        -->
+        <a type="string" id="ITEM_SUB_ID"/>
         
         <t name="ARMORLEVEL"/>
         <t name="COVERAGE"/>
@@ -87,6 +98,7 @@ required = the attribute is required
     </t>
 
     <t name="NAME">
+        <a type="string"/>
         <a type="string"/>
         <a type="string"/>
     </t>

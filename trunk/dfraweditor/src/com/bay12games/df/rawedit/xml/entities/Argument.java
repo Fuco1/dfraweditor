@@ -18,7 +18,10 @@ package com.bay12games.df.rawedit.xml.entities;
 
 import com.Main;
 import com.bay12games.df.rawedit.adt.PrefixTree;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Set;
+import org.apache.log4j.Logger;
 
 /**
  * This class represents a single argument of container or token. Each argument
@@ -38,6 +41,7 @@ import java.util.Set;
  */
 public class Argument {
 
+    private static final Logger log = Logger.getLogger(Argument.class);
     private String type;
     private String description;
     private int min = 0;
@@ -100,15 +104,41 @@ public class Argument {
     }
 
     /**
+     * @param owner Owner of this argument
+     * @param index Index of this argument in owner's list
+     * @param tokens List of all language tokens (token/container name and values of all arguments)
      * @return PrefixTree representing all valid values that can appear inside this argument.
      * No suggestions are returned for type range and string (which is not ref). 0 is returned for
      * type int.
      */
-    public PrefixTree getSuggestions() {
+    public PrefixTree getSuggestions(Token owner, int index, String[] tokens) {
+        log.trace(Arrays.toString(tokens));
+        log.trace("Argument hint: start");
         PrefixTree suggestions = new PrefixTree();
         if (getRef() != null) {
+            log.trace("Argument hint: is ref");
             Id idOb = Main.getConfig().getIds().get(getRef());
-            suggestions.add(idOb.getItems());
+            if (idOb != null) {
+                if (idOb.isFlat()) {
+                    suggestions.add(idOb.getItems());
+                }
+                else {
+                    log.trace("Argument hint: not a flat ref: starting at " + index);
+                    ArrayList<Argument> args = owner.getArguments();
+                    for (int i = index - 1; i >= 0; i--) {
+                        log.trace(i + ": " + args.get(i).getRef());
+                        if (args.get(i).getRef() != null) {
+                            String cat = tokens[index];
+                            log.trace("Category: " + cat);
+                            Set<String> categorySet = idOb.getCategory(cat);
+                            if (categorySet != null) {
+                                suggestions.add(categorySet);
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
         }
         else if ("enum".equals(getType())) {
             suggestions.add(getEnumItems());
@@ -117,14 +147,6 @@ public class Argument {
             suggestions.add("0");
         }
         return suggestions;
-    }
-
-    public PrefixTree getSuggestions(Token owner) {
-        throw new UnsupportedOperationException("Not yet implemented");
-    }
-
-    public PrefixTree getSuggestions(Argument previousArgument) {
-        throw new UnsupportedOperationException("Not yet implemented");
     }
 
     @Override

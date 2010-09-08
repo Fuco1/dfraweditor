@@ -29,7 +29,7 @@ import java.util.List;
  */
 public class Token {
 
-    private List<Argument> arguments;
+    private ArrayList<Argument> arguments;
     private String name;
     private String description;
     private boolean required = false;
@@ -63,7 +63,7 @@ public class Token {
         }
     }
 
-    public List<Argument> getArguments() {
+    public ArrayList<Argument> getArguments() {
         if (arguments == null) {
             arguments = new ArrayList<Argument>();
         }
