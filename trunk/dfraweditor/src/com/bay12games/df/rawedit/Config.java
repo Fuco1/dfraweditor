@@ -58,6 +58,7 @@ public class Config {
     }
 
     private void init() {
+        model = new Model(null);
         properties = new Properties();
         Reader is = null;
         try {

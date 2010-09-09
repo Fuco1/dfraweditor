@@ -18,6 +18,7 @@ package com.bay12games.df.rawedit.model;
 
 import com.bay12games.df.rawedit.adt.Range;
 import java.util.ArrayList;
+import java.util.HashSet;
 import javax.swing.tree.DefaultTreeModel;
 
 /**
@@ -43,6 +44,12 @@ public class Model extends DefaultTreeModel {
      * issues (virtual methods)
      */
     private ArrayList<Range<Node>> ranges = new ArrayList<Range<Node>>();
+    /**
+     * The buffer of IDs parsed in the last DocumentLoader#buildModel invocation.
+     * We use this buffer to compare the current invocation with the last and dispose
+     * IDs that are no longer valid (ie, deleted or modified)
+     */
+    private HashSet<String> idBuffer = new HashSet<String>();
 
     public Model(Node root) {
         super(root);
@@ -113,5 +120,21 @@ public class Model extends DefaultTreeModel {
      */
     public void clear() {
         ranges.clear();
+    }
+
+    /**
+     * Add id to id buffer
+     * @param id Id
+     */
+    public void addId(String id) {
+        idBuffer.add(id);
+    }
+
+    public HashSet<String> getIdBuffer() {
+        return idBuffer;
+    }
+
+    public void setIdBuffer(HashSet<String> idBuffer) {
+        this.idBuffer = idBuffer;
     }
 }

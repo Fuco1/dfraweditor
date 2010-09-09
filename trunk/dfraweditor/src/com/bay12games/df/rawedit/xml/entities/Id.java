@@ -18,7 +18,6 @@ package com.bay12games.df.rawedit.xml.entities;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Set;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -37,19 +36,19 @@ public class Id {
 //    private String to;
     /** Map of from-to pairs from <id> definitions. If this id is flat (no subs),
     this is null */
-    private Map<String, String> fromToMap;
+    private HashMap<String, String> fromToMap;
     /** If there are no categories, this only takes 4 bytes (reference). We
     have separate list for flat categories (no subs) to save time and complexity.
     The key is the "to" value from  the <id> definition. */
-    private Map<String, Set<String>> categories;
+    private HashMap<String, HashSet<String>> categories;
     /** list of items for flat category (no subs) */
-    private Set<String> items;
+    private HashSet<String> items;
 
     public Id(String name) {
         this.name = name;
     }
 
-    public Map<String, Set<String>> getCategories() {
+    public HashMap<String, HashSet<String>> getCategories() {
         return categories;
     }
 
@@ -58,7 +57,7 @@ public class Id {
      *
      * @return The set of possible values for this id/ref
      */
-    public Set<String> getItems() {
+    public HashSet<String> getItems() {
         return items;
     }
 
@@ -66,7 +65,7 @@ public class Id {
         return items == null || items.isEmpty();
     }
 
-    public Set<String> getCategory(String name) {
+    public HashSet<String> getCategory(String name) {
         if (categories != null) {
             return categories.get(name);
         }
@@ -87,9 +86,9 @@ public class Id {
     // category == to
     public void addItemToCategory(String category, String item) {
         if (categories == null) {
-            categories = new HashMap<String, Set<String>>();
+            categories = new HashMap<String, HashSet<String>>();
         }
-        Set<String> cat = categories.get(category);
+        HashSet<String> cat = categories.get(category);
         if (cat == null) {
             cat = new HashSet<String>();
             categories.put(category, cat);
@@ -159,7 +158,7 @@ public class Id {
 
             if (categories != null) {
                 sb.append("\n  Sub-categories: ");
-                for (Entry<String, Set<String>> entry : categories.entrySet()) {
+                for (Entry<String, HashSet<String>> entry : categories.entrySet()) {
                     //sb.append(entry.getKey()).append("->").append(entry.getValue());
                     sb.append("\n    Category: ").append(entry.getKey()).append("\n    ");
                     for (String item : entry.getValue()) {

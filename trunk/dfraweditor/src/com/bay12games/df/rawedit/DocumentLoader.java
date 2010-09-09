@@ -31,6 +31,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.LineNumberReader;
 import java.util.Deque;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -118,6 +120,8 @@ public final class DocumentLoader {
      * @see Model
      */
     public static Model buildModel(String content) {
+        long time = System.currentTimeMillis();
+        log.trace("#### START");
         Map<String, Container> containers = Main.getConfig().getContainers();
         Map<String, Token> tokens = Main.getConfig().getTokens();
         Map<String, Id> ids = Main.getConfig().getIds();
@@ -129,6 +133,9 @@ public final class DocumentLoader {
         Model model = new Model(root);
         model.setRoot(root);
         stack.add(root);
+
+        HashSet<String> oldIdBuffer = Config.getInstance().getModel().getIdBuffer();
+        HashSet<String> idBuffer = model.getIdBuffer();
 
         TokenIterator ti = new TokenIterator(content);
         Node node = null;
@@ -297,7 +304,7 @@ public final class DocumentLoader {
                     stack.getLast().add(node);
                     argumentIndex++;
                     // if the argument is ID, add the value to the id list
-                    addItemToIdList(a, t, topContainer.getName(), ids);
+                    addItemToIdList(a, t, topContainer.getName(), ids, oldIdBuffer, idBuffer);
                 }
                 // This is not a token or container, since it falled past the
                 // branches. This is not an argument either. So it's a comment...
@@ -319,7 +326,7 @@ public final class DocumentLoader {
                     stack.getLast().add(node);
                     argumentIndex++;
                     // if the argument is ID, add the value to the id list
-                    addItemToIdList(a, t, topToken.getName(), ids);
+                    addItemToIdList(a, t, topToken.getName(), ids, oldIdBuffer, idBuffer);
                 }
                 else {
                     // If we're out of the argument limit or the token body has ended
@@ -351,6 +358,9 @@ public final class DocumentLoader {
 
         }
 
+        //model.setIdBuffer(idBuffer);
+        log.trace("End time: " + (System.currentTimeMillis() - time));
+        log.trace("#### END" + idBuffer);
         return model;
     }
 
@@ -362,17 +372,93 @@ public final class DocumentLoader {
      * @param tokenName Name of the parent token/container of this argument
      */
     private static void addItemToIdList(Argument a, String item, String tokenName,
-                                        Map<String, Id> ids) {
+                                        Map<String, Id> ids, HashSet<String> oldIdBuffer,
+                                        HashSet<String> idBuffer) {
         if (a.getId() != null) {
             Id id = ids.get(a.getId());
             if (id.isFlat()) {
+                // [TODO] COPYPASTED FROM BELOW... ABSTRACT!
+                if (!id.hasNoItems()) {
+                    HashSet<String> items = id.getItems();
+//                    log.debug("Flat ID list " + a.getId());
+//                    log.debug("Items: " + items);
+//                    log.debug("OldBuffer: " + oldIdBuffer);
+
+                    // assign the smaller set to iterateOver, so we save time
+                    // iterating and removing elements
+                    HashSet<String> iterateOver = items;
+                    HashSet<String> removeFrom = oldIdBuffer;
+
+                    if (items.size() > oldIdBuffer.size()) {
+                        iterateOver = oldIdBuffer;
+                        removeFrom = items;
+                    }
+
+                    String s = null;
+                    for (Iterator<String> it = iterateOver.iterator(); it.hasNext();) {
+                        s = it.next();
+                        if (removeFrom.contains(s)) {
+//                            log.debug("Removing " + s);
+                            removeFrom.remove(s);
+                            it.remove();
+                        }
+                    }
+                }
+                else {
+//                    log.debug("No items, nothing to do, just add " + item);
+                }
                 id.addItem(item);
+                idBuffer.add(item);
+                // END OF COPYPASTA
             }
             else {
                 Map<String, String> fromToMap = id.getFromToMap();
                 if (fromToMap != null) {
-                    String catgory = fromToMap.get(tokenName);
-                    id.addItemToCategory(catgory, item);
+                    String category = fromToMap.get(tokenName);
+                    if (category != null) {
+                        if (!id.hasNoCategories()) {
+                            HashSet<String> categoryItems = id.getCategory(category);
+//                            log.debug("Category list " + category);
+//                            log.debug("Items: " + categoryItems);
+//                            log.debug("OldBuffer: " + oldIdBuffer);
+
+                            // assign the smaller set to iterateOver, so we save time
+                            // iterating and removing elements
+                            HashSet<String> iterateOver = categoryItems;
+                            HashSet<String> removeFrom = oldIdBuffer;
+
+                            if (categoryItems.size() > oldIdBuffer.size()) {
+                                iterateOver = oldIdBuffer;
+                                removeFrom = categoryItems;
+                            }
+
+                            // Remove all tokens that are in the oldIdBuffer from current
+                            // category. The buffer only have items from current document
+                            // so we don't touch anything else.
+                            // The removed tokens are then added in the usual manner during
+                            // the parsing
+                            // [TODO] create a flag so we remember which category was already
+                            // cleaned, and only clean it once.
+                            // cleanbuffer could be a Map?
+
+                            String s = null;
+                            for (Iterator<String> it = iterateOver.iterator(); it.hasNext();) {
+                                s = it.next();
+                                if (removeFrom.contains(s)) {
+//                                    log.debug("Removing " + s);
+                                    removeFrom.remove(s);
+                                    it.remove();
+                                }
+                            }
+                        }
+                        else {
+//                            log.debug("No items, nothing to do, just add " + item + " to category " + category);
+                        }
+
+                        id.addItemToCategory(category, item);
+                        // also, remember to fill the new change buffer
+                        idBuffer.add(item);
+                    }
                 }
             }
         }
