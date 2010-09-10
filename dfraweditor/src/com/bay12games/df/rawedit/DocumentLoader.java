@@ -121,7 +121,7 @@ public final class DocumentLoader {
      */
     public static Model buildModel(String content) {
         long time = System.currentTimeMillis();
-        log.trace("#### START");
+        log.debug("#### START");
         Map<String, Container> containers = Main.getConfig().getContainers();
         Map<String, Token> tokens = Main.getConfig().getTokens();
         Map<String, Id> ids = Main.getConfig().getIds();
@@ -359,7 +359,7 @@ public final class DocumentLoader {
         }
 
         //model.setIdBuffer(idBuffer);
-        log.trace("End time: " + (System.currentTimeMillis() - time));
+        log.debug("End time: " + (System.currentTimeMillis() - time));
         log.trace("#### END" + idBuffer);
         return model;
     }
