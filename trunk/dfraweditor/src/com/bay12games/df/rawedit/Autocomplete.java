@@ -37,7 +37,7 @@ import org.apache.log4j.Logger;
  * @author Matus Goljer
  * @version 1.0
  */
-public class Autocomplete {
+public class Autocomplete implements TextInsertionProvider {
 
     private static final Autocomplete instance = new Autocomplete();
     private static final Logger log = Logger.getLogger(Autocomplete.class);
@@ -65,14 +65,16 @@ public class Autocomplete {
      * @return Ordered list of suggestions
      */
     public List<String> getSuggestionList(final Model model,
-                                          final Document d,
+                                          final int nodeIndex,
+                                          Node node,
+                                          String prefix,
                                           final int offset) {
 
-        int nodeIndex = model.getClosestNodeIndexByStartOffset(offset);
-        Node node = null;
-        if (nodeIndex > 0) {
-            node = model.getRanges().get(nodeIndex).getUserData();
-        }
+//        int nodeIndex = model.getClosestNodeIndexByStartOffset(offset);
+//        Node node = null;
+//        if (nodeIndex > 0) {
+//            node = model.getRanges().get(nodeIndex).getUserData();
+//        }
         //Node node = model.getClosestNodeByStartOffset(offset);
         if (node == null) {
             return noSuggestionArray;
@@ -83,18 +85,18 @@ public class Autocomplete {
         log.trace(node.getEndOffset());
         log.trace(node.getParent().getUserObject().getClass());
 
-        String prefix = null;
+        //String prefix = null;
 
-        try {
-            if (node.isWhitespace()) {
-                prefix = "";
-            }
-            else {
-                prefix = d.getText(node.getStartOffset(), offset - node.getStartOffset());
-            }
-        } catch (BadLocationException ex) {
-            return noSuggestionArray;
+//        try {
+        if (node.isWhitespace()) {
+            prefix = "";
         }
+//            else {
+//                prefix = d.getText(node.getStartOffset(), offset - node.getStartOffset());
+//            }
+//        } catch (BadLocationException ex) {
+//            return noSuggestionArray;
+//        }
 
         PrefixTree suggestions = new PrefixTree();
 
@@ -113,7 +115,7 @@ public class Autocomplete {
                 Token t = (Token) parent.getUserObject();
                 Argument a = t.getArgument(indexOfArgument);
                 suggestions = a.getSuggestions(t, indexOfArgument,
-                  getFullTokenList(t.getArgumentSize(), nodeIndex, indexOfArgument));
+                  getFullTokenList(t.getArgumentSize(), nodeIndex, indexOfArgument, model));
             }
         }
         else if (node.getUserObject() instanceof Argument) {
@@ -122,7 +124,7 @@ public class Autocomplete {
             Token t = (Token) parent.getUserObject();
             int indexOfArgument = parent.getIndex(node);
             suggestions = a.getSuggestions(t, indexOfArgument,
-              getFullTokenList(t.getArgumentSize(), nodeIndex, indexOfArgument));
+              getFullTokenList(t.getArgumentSize(), nodeIndex, indexOfArgument, model));
         }
         else if (node.getUserObject() instanceof Token) {
             Node parent = node.getParent();
@@ -147,10 +149,9 @@ public class Autocomplete {
         return re;
     }
 
-    private String[] getFullTokenList(int numberOfArgs, int currentRangeIndex, int currentArgIndex) {
+    private String[] getFullTokenList(int numberOfArgs, int currentRangeIndex, int currentArgIndex, Model model) {
         String[] re = new String[numberOfArgs + 1];
         int index = currentRangeIndex - currentArgIndex - 1;
-        Model model = Config.getInstance().getModel();
         ArrayList<Range<Node>> ranges = model.getRanges();
         re[0] = ranges.get(index).getUserData().getText();
         for (int i = 1; i < numberOfArgs + 1; i++) {
@@ -162,6 +163,7 @@ public class Autocomplete {
         return re;
     }
 
+    @Override
     public void complete(final DefaultStyledDocument d, final Model model, final int index, String insert) {
         int nodeIndex = model.getClosestNodeIndexByStartOffset(index);
         if (nodeIndex == -1) {

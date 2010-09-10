@@ -33,6 +33,7 @@ import java.io.Reader;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
+import javax.swing.JFrame;
 import org.apache.log4j.Logger;
 
 /**
@@ -41,7 +42,7 @@ import org.apache.log4j.Logger;
  * @author Matus Goljer
  * @version 1.0
  */
-public class Config {
+public class Config implements TokenDescriptionProvider {
 
     private static final Logger log = Logger.getLogger(Config.class);
     private static final Config instance = new Config();
@@ -51,6 +52,7 @@ public class Config {
     private Map<String, Id> ids;
     private Properties properties;
     private Model model;
+    private JFrame mainFrame;
     private DocumentChangesBuffer changeBuffer = new DocumentChangesBuffer();
 
     private Config() {
@@ -244,6 +246,7 @@ public class Config {
      * @return The description for the element
      */
     // [TODO] i18n
+    @Override
     public String getDescriptionForElement(int index, String element) {
         Node node = model.getClosestNodeByStartOffset(index);
         if (node.isComment()) {
@@ -311,5 +314,13 @@ public class Config {
         else {
             return "No description available";
         }
+    }
+
+    public JFrame getMainFrame() {
+        return mainFrame;
+    }
+
+    public void setMainFrame(JFrame mainFrame) {
+        this.mainFrame = mainFrame;
     }
 }

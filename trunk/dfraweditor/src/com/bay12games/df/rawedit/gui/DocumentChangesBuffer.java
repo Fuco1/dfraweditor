@@ -32,6 +32,10 @@ public class DocumentChangesBuffer {
     private ArrayList<Range> ranges = new ArrayList<Range>();
     private static final ArrayList<Range> emptyList = new ArrayList<Range>();
 
+    public synchronized boolean isEmpty() {
+        return ranges.isEmpty();
+    }
+
     public synchronized void clear() {
         ranges.clear();
     }
@@ -50,7 +54,7 @@ public class DocumentChangesBuffer {
         if (ranges.isEmpty()) {
             return emptyList;
         }
-        
+
         Collections.sort(ranges, new Comparator<Range>() {
 
             @Override
