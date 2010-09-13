@@ -40,6 +40,7 @@ import org.apache.log4j.Logger;
  * Singleton access point to program settings and data.
  *
  * @author Matus Goljer
+ * @author Bruno Zimmermann
  * @version 1.0
  */
 public class Config implements TokenDescriptionProvider {
@@ -47,9 +48,7 @@ public class Config implements TokenDescriptionProvider {
     private static final Logger log = Logger.getLogger(Config.class);
     private static final Config instance = new Config();
     private Map<String, KeyWordType> keywordTypes;
-    private Map<String, Container> containers;
-    private Map<String, Token> tokens;
-    private Map<String, Id> ids;
+    private ElementContainer elementContainer;
     private Properties properties;
     private Model model;
     private JFrame mainFrame;
@@ -69,25 +68,8 @@ public class Config implements TokenDescriptionProvider {
 
             keywordTypes = KeyWordTypeLoader.load(properties.getProperty("keyword.TypesSource"));
 
-            RawsDescriptionLoader rloader = new RawsDescriptionLoader();
-            // list of colon-delimited sources for raws
-            String sourceProp = properties.getProperty("raws.Source");
-            String[] sources = {""};
-            if (sourceProp != null) {
-                sources = sourceProp.split("\\:");
-            }
+            readRawsSource();
 
-            // load all files incrementally
-            ElementContainer ec = null;
-            for (String s : sources) {
-                ec = rloader.parse(s, ec);
-            }
-
-            if (ec != null) {
-                containers = ec.getContainers();
-                tokens = ec.getTokens();
-                ids = ec.getIds();
-            }
         } catch (IOException ex) {
             log.error("Unable to init Config. Application is shutting down.", ex);
             System.exit(1);
@@ -102,6 +84,29 @@ public class Config implements TokenDescriptionProvider {
             }
         }
     }
+
+	/**
+	 * Reads all XML files defined under <i>raws.Source</i> in the properties.<br> 
+	 * Use with caution. It takes a while to load the XML-definitions.<br>
+	 * @return an new <code>ElementContainer</code> containing all tokens, containers and ids read from the xmls.
+	 */
+	private ElementContainer readRawsSource() //TODO maybe change it to public when you want to have a way to reread the XMLs
+	{
+		ElementContainer elementContainer = null;
+		RawsDescriptionLoader rloader = new RawsDescriptionLoader();
+		// list of colon-delimited sources for raws
+		String sourceProp = properties.getProperty("raws.Source");
+		String[] sources = {""};
+		if (sourceProp != null) {
+		    sources = sourceProp.split("\\:"); //TODO replace with a folder where all xmls are.
+		}
+
+		// load all files incrementally
+		for (String s : sources) {
+			elementContainer = rloader.parse(s, elementContainer);
+		}
+		return elementContainer;
+	}
 
     public static Config getInstance() {
         return instance;
@@ -119,21 +124,21 @@ public class Config implements TokenDescriptionProvider {
      * @return The unmodifiable view of the map containing all available Containers
      */
     public Map<String, Container> getContainers() {
-        return Collections.unmodifiableMap(containers);
+        return Collections.unmodifiableMap(elementContainer.getContainers());
     }
 
     /**
      * @return The unmodifiable view of the map containing all available Tokens
      */
     public Map<String, Token> getTokens() {
-        return Collections.unmodifiableMap(tokens);
+        return Collections.unmodifiableMap(elementContainer.getTokens());
     }
 
     /**
      * @return The unmodifiable view of the map containing all available Ids
      */
     public Map<String, Id> getIds() {
-        return Collections.unmodifiableMap(ids);
+        return Collections.unmodifiableMap(elementContainer.getIds());
     }
 
     /**
@@ -150,8 +155,8 @@ public class Config implements TokenDescriptionProvider {
      * @return The immutable instance of the Container
      */
     public Container getContainer(String name) {
-        if (containers != null) {
-            return containers.get(name);
+        if (elementContainer.getContainers() != null) {
+            return elementContainer.getContainers().get(name);
         }
         else {
             return null;
@@ -172,8 +177,9 @@ public class Config implements TokenDescriptionProvider {
      * @return The immutable instance of the Token
      */
     public Token getToken(String name) {
-        if (tokens != null) {
-            return tokens.get(name);
+        if (elementContainer.getTokens() != null) {
+        	return elementContainer.getTokens().get(name);
+            
         }
         else {
             return null;
@@ -194,8 +200,8 @@ public class Config implements TokenDescriptionProvider {
      * @return The immutable instance of the Id
      */
     public Id getId(String name) {
-        if (ids != null) {
-            return ids.get(name);
+        if (elementContainer.getIds() != null) {
+            return elementContainer.getIds().get(name);
         }
         else {
             return null;
