@@ -33,15 +33,15 @@ import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
 /**
- * Parser for loading files with RAW definitions.
- *
+ * Parser for loading files with RAW definitions.<br>
+ *<br>
  * Parser will create each container/token/id instance
  * exactly once. This instance is then stored in the global lookup table, one for
- * containers and one for tokens. The definitions can be split in multiple files.
- *
+ * containers and one for tokens. The definitions can be split in multiple files.<br>
+ *<br>
  * The placeholder instance is created on the first encounter in the XML. It is then
  * stored in the global lookup table without additional attributes, that might be
- * loaded from different file in the future.
+ * loaded from different file in the future.<br>
  *
  * @author Matus Goljer
  * @version 1.0
@@ -63,10 +63,10 @@ public class RawsDescriptionLoader {
     }
 
     /**
-     * Load and parse specified raws definition file.
+     * Load and parse specified raws definition file.<br><br>
      *
      * New instance of ElementContainer is returned. New instances of underlying
-     * maps are created as well.
+     * maps are created as well.<br>
      *
      * @param source Path to the file to load and parse
      * @return New instance of ElementContainer with maps of tokens and containers
@@ -79,12 +79,12 @@ public class RawsDescriptionLoader {
      * Load and parse specified raws definition file. If elements is null, only
      * the content of the current file will be returned. If elements is not null
      * and contains not-null token and container maps, the content of current
-     * file will be appended as if the definitions were in one file.
+     * file will be appended as if the definitions were in one file.<br>
      *
-     * The instances of the underlying containers are preserved.
+     * The instances of the underlying containers are preserved.<br>
      *
      * <p><strong>Note:</strong> There should be only one global access to the token/container
-     * definitions in the application.
+     * definitions in the application.<br>
      *
      * @param source Path to the file to load and parse
      * @param elements The tuple-container for token, container and id elements
@@ -97,10 +97,10 @@ public class RawsDescriptionLoader {
     }
 
     /**
-     * Load and parse specified raws definition file.
+     * Load and parse specified raws definition file.<br>
      *
      * New instance of ElementContainer is returned. New instances of underlying
-     * maps are created as well.
+     * maps are created as well.<br>
      *
      * @param file The file to load and parse
      * @return New instance of ElementContainer with maps of tokens and containers
@@ -113,12 +113,12 @@ public class RawsDescriptionLoader {
      * Load and parse specified raws definition file. If elements is null, only
      * the content of the current file will be returned. If elements is not null
      * and contains not-null token and container maps, the content of current
-     * file will be appended as if the definitions were in one file.
+     * file will be appended as if the definitions were in one file.<br><br>
      *
-     * The instances of the underlying containers are preserved.
+     * The instances of the underlying containers are preserved.<br><br>
      *
      * <p><strong>Note:</strong> There should be only one global access to the token/container
-     * definitions in the application.
+     * definitions in the application.<br>
      *
      * @param file The file to load and parse
      * @param elements The tuple-container for token, container and id elements
