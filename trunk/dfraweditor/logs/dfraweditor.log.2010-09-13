@@ -1,0 +1,12 @@
+[2010-09-13 19:02:34,718] INFO  [com.Main] Start 
+[2010-09-13 19:02:34,902] INFO  [com.Main] Session closed 
+[2010-09-13 19:02:35,264] DEBUG [com.Main] Building initial model: 1284397355264 
+[2010-09-13 19:02:35,264] DEBUG [com.bay12games.df.rawedit.DocumentLoader] #### START 
+[2010-09-13 19:02:35,280] DEBUG [com.bay12games.df.rawedit.DocumentLoader] End time: 16 
+[2010-09-13 19:02:35,280] DEBUG [com.Main] 1284397355280 
+[2010-09-13 19:40:05,426] INFO  [com.Main] Start 
+[2010-09-13 19:40:05,590] INFO  [com.Main] Session closed 
+[2010-09-13 19:40:05,801] DEBUG [com.Main] Building initial model: 1284399605801 
+[2010-09-13 19:40:05,802] DEBUG [com.bay12games.df.rawedit.DocumentLoader] #### START 
+[2010-09-13 19:40:05,810] DEBUG [com.bay12games.df.rawedit.DocumentLoader] End time: 8 
+[2010-09-13 19:40:05,810] DEBUG [com.Main] 1284399605810 
