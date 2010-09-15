@@ -15,10 +15,10 @@ Feel free to add some things :)
   * Make Ids, Tokens & Containers really immutable
   * Remove codesmells
   * Improve comments
-  * Allow an infinite number of input XML files ,,Arni,, (yeha im taking it because it will be fun to do this)
+  * _Allow an infinite number of input XML files_
   * Handle Exceptions. What if there are no xmls, xmls are empty, etc... Just what ever can go wrong ;)
   * Bundle hardcoded things (eg. properties) in a constants class with final fields
-  * Create a token element. This token element serves as building block for the token tree that represents the structure of a raw. Will probably improve the overall quality of the code. Nessesary for Arni's part
-  * Arni's GUI modding tool (DwarfStruct)
+  * Create a token element. This token element serves as building block for the token tree that represents the structure of a raw. Will probably improve the overall quality of the code. Nessesary for Arni's part ,,Arni,,
+  * Arni's GUI modding tool. Will be called DwarfStruct :)
   * Build together the tools / Make it switchable
   * Manage existing raws (Read/Write)
