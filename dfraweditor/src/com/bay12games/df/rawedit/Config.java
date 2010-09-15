@@ -16,25 +16,31 @@
  */
 package com.bay12games.df.rawedit;
 
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.Reader;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+
+import javax.swing.JFrame;
+
+import org.apache.log4j.Logger;
+
 import com.bay12games.df.rawedit.gui.DocumentChangesBuffer;
 import com.bay12games.df.rawedit.model.Model;
 import com.bay12games.df.rawedit.model.Node;
 import com.bay12games.df.rawedit.xml.KeyWordType;
 import com.bay12games.df.rawedit.xml.KeyWordTypeLoader;
 import com.bay12games.df.rawedit.xml.RawsDescriptionLoader;
+import com.bay12games.df.rawedit.xml.XMLFileSearcher;
 import com.bay12games.df.rawedit.xml.entities.Argument;
 import com.bay12games.df.rawedit.xml.entities.Container;
 import com.bay12games.df.rawedit.xml.entities.ElementContainer;
 import com.bay12games.df.rawedit.xml.entities.Id;
 import com.bay12games.df.rawedit.xml.entities.Token;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.Reader;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Properties;
-import javax.swing.JFrame;
-import org.apache.log4j.Logger;
 
 /**
  * Singleton access point to program settings and data.
@@ -68,7 +74,7 @@ public class Config implements TokenDescriptionProvider {
 
             keywordTypes = KeyWordTypeLoader.load(properties.getProperty("keyword.TypesSource"));
 
-            readRawsSource();
+            this.elementContainer=readRawsSource();
 
         } catch (IOException ex) {
             log.error("Unable to init Config. Application is shutting down.", ex);
@@ -89,22 +95,31 @@ public class Config implements TokenDescriptionProvider {
 	 * Reads all XML files defined under <i>raws.Source</i> in the properties.<br> 
 	 * Use with caution. It takes a while to load the XML-definitions.<br>
 	 * @return an new <code>ElementContainer</code> containing all tokens, containers and ids read from the xmls.
+	 * @throws IOException if the raws.Source in the properties does not exist.
 	 */
-	private ElementContainer readRawsSource() //TODO maybe change it to public when you want to have a way to reread the XMLs
+	private ElementContainer readRawsSource() throws IOException //TODO maybe change it to public when you want to have a way to reread the XMLs
 	{
 		ElementContainer elementContainer = null;
 		RawsDescriptionLoader rloader = new RawsDescriptionLoader();
 		// list of colon-delimited sources for raws
 		String sourceProp = properties.getProperty("raws.Source");
-		String[] sources = {""};
-		if (sourceProp != null) {
-		    sources = sourceProp.split("\\:"); //TODO replace with a folder where all xmls are.
+		XMLFileSearcher searcher = new XMLFileSearcher(sourceProp);
+		List<File> xmlFiles = searcher.getXML();
+		for(File file:xmlFiles)
+		{
+			elementContainer = rloader.parse(file, elementContainer);
 		}
-
-		// load all files incrementally
-		for (String s : sources) {
-			elementContainer = rloader.parse(s, elementContainer);
-		}
+		
+//		String[] sources = {""};
+//		if (sourceProp != null) {
+//		    sources = sourceProp.split("\\:"); //TODO replace with a folder where all xmls are.
+//		}
+//
+//		// load all files incrementally
+//		for (String s : sources) {
+//			elementContainer = rloader.parse(s, elementContainer);
+//		}
+		
 		return elementContainer;
 	}
 
