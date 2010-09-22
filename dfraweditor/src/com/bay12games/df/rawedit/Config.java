@@ -21,6 +21,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -29,6 +30,10 @@ import javax.swing.JFrame;
 
 import org.apache.log4j.Logger;
 
+import com.bay12games.df.common.model.Constants;
+import com.bay12games.df.common.model.PropertiesLoader;
+import com.bay12games.df.dwarfstruct.model.DwarfStructElement;
+import com.bay12games.df.dwarfstruct.model.DwarfStructElementParser;
 import com.bay12games.df.rawedit.gui.DocumentChangesBuffer;
 import com.bay12games.df.rawedit.model.Model;
 import com.bay12games.df.rawedit.model.Node;
@@ -55,10 +60,11 @@ public class Config implements TokenDescriptionProvider {
     private static final Config instance = new Config();
     private Map<String, KeyWordType> keywordTypes;
     private ElementContainer elementContainer;
-    private Properties properties;
+    private PropertiesLoader properties;
     private Model model;
     private JFrame mainFrame;
     private DocumentChangesBuffer changeBuffer = new DocumentChangesBuffer();
+    
 
     private Config() {
         init();
@@ -66,30 +72,32 @@ public class Config implements TokenDescriptionProvider {
 
     private void init() {
         model = new Model(null);
-        properties = new Properties();
-        Reader is = null;
+ 
         try {
-            is = new FileReader("config.properties");
-            properties.load(is);
+        	properties = PropertiesLoader.getInstance();
 
-            keywordTypes = KeyWordTypeLoader.load(properties.getProperty("keyword.TypesSource"));
+            keywordTypes = KeyWordTypeLoader.load(properties.getProperty(Constants.KEYWORD_TYPES_SOURCE));
 
             this.elementContainer=readRawsSource();
-
+            parseDwarfStructElements();
+            
         } catch (IOException ex) {
             log.error("Unable to init Config. Application is shutting down.", ex);
             System.exit(1);
-        } finally {
-            if (is != null) {
-                try {
-                    is.close();
-                } catch (IOException ex) {
-                    log.error("Unable to close Config file. You might be unable to access this file"
-                      + " while the application is running (lock held)", ex);
-                }
-            }
         }
     }
+
+
+
+	private void parseDwarfStructElements()
+	{
+		DwarfStructElementParser parser = new DwarfStructElementParser(elementContainer);
+		for(String test : parser.getTopElements().keySet())
+		{
+			log.debug("Whoop" + test);
+		}
+		
+	}
 
 	/**
 	 * Reads all XML files defined under <i>raws.Source</i> in the properties.<br> 

@@ -16,6 +16,43 @@
  */
 package com;
 
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.HeadlessException;
+import java.awt.MenuItem;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import javax.swing.Action;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
+import javax.swing.JTextPane;
+import javax.swing.JTree;
+import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.UndoableEditEvent;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.AbstractDocument.DefaultDocumentEvent;
+import javax.swing.undo.UndoManager;
+
+import org.apache.log4j.Logger;
+
+import com.bay12games.df.common.gui.ModToolGui;
 import com.bay12games.df.rawedit.Autocomplete;
 import com.bay12games.df.rawedit.Config;
 import com.bay12games.df.rawedit.DocumentLoader;
@@ -29,41 +66,19 @@ import com.bay12games.df.rawedit.gui.RawDocument;
 import com.bay12games.df.rawedit.gui.RedoAction;
 import com.bay12games.df.rawedit.gui.UndoAction;
 import com.bay12games.df.rawedit.model.Model;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.event.InputEvent;
-import java.awt.event.KeyEvent;
-import java.io.IOException;
-import java.util.Timer;
-import java.util.TimerTask;
-import javax.swing.Action;
-import javax.swing.JComponent;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
-import javax.swing.JTextPane;
-import javax.swing.JTree;
-import javax.swing.KeyStroke;
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.UndoableEditEvent;
-import javax.swing.text.AbstractDocument.DefaultDocumentEvent;
-import javax.swing.text.BadLocationException;
-import javax.swing.undo.UndoManager;
-import org.apache.log4j.Logger;
 
 /**
  *
  * @author Matus Goljer
+ * @author Bruno Zimmermann
  * @version 1.0
  */
 public class Main extends JPanel {
 
     private static final Logger log = Logger.getLogger(Main.class);
     private static Config config;
+    
+    private static JPanel contentPanel;
 
     public static Config getConfig() {
         return config;
@@ -90,6 +105,7 @@ public class Main extends JPanel {
     public Main() {
         super(new BorderLayout());
         final Autocomplete ac = Autocomplete.getInstance();
+        
         // prepare document and keyword stuff
         RawDocument d1 = null;
         try {
@@ -187,24 +203,40 @@ public class Main extends JPanel {
 
     public static void main(String[] args) {
         log.info("Start");
+        Date t1 = new Date();
         config = Config.getInstance();
+        Date t2 = new Date();
+        log.debug("Time needed for initialize config:" + Long.toString(t2.getTime()-t1.getTime()));
 
 
         SwingUtilities.invokeLater(new Runnable() {
 
             @Override
             public void run() {
-                try {
-                    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-                } catch (Exception ex) {
-                }
-                JFrame frame = new JFrame("Dwarf Fortress RAW editor");
+                ModToolGui frame = null;
+				try
+				{
+					frame = new ModToolGui();
+				} catch (HeadlessException e)
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (FileNotFoundException e)
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e)
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} 
                 config.setMainFrame(frame);
-                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                frame.setContentPane(new Main());
-                frame.pack();
-                frame.setVisible(true);
+                //TODO Make it remember!
+                frame.setSystemLookAndFeel();
+                frame.display();
             }
+
+
         });
 
         log.info("Session closed");

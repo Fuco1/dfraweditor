@@ -25,9 +25,10 @@ import java.util.List;
  * contain no arguments, in which case it is referred to as "flag".
  *
  * @author Matus Goljer
+ * @author Bruno Zimmermann
  * @version 1.0
  */
-public class Token {
+public class Token implements Comparable<Token>{
 
     private ArrayList<Argument> arguments;
     private String name;
@@ -109,4 +110,10 @@ public class Token {
         }
         return sb.toString();
     }
+
+	@Override
+	public int compareTo(Token o)
+	{
+		return this.getName().compareTo(o.getName());
+	}
 }
