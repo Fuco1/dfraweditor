@@ -7,7 +7,7 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 
-import com.bay12games.df.rawedit.util.Constants;
+import com.bay12games.df.common.model.Constants;
 
 /**
  * @author Bruno Zimmermann
