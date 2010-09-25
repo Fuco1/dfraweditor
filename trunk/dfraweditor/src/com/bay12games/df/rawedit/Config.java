@@ -61,6 +61,7 @@ public class Config implements TokenDescriptionProvider {
     private Map<String, KeyWordType> keywordTypes;
     private ElementContainer elementContainer;
     private PropertiesLoader properties;
+    private Map<String, DwarfStructElement> dwarfStructTrees;
     private Model model;
     private JFrame mainFrame;
     private DocumentChangesBuffer changeBuffer = new DocumentChangesBuffer();
@@ -92,11 +93,7 @@ public class Config implements TokenDescriptionProvider {
 	private void parseDwarfStructElements()
 	{
 		DwarfStructElementParser parser = new DwarfStructElementParser(elementContainer);
-		for(String test : parser.getTopElements().keySet())
-		{
-			log.debug("Whoop" + test);
-		}
-		
+		dwarfStructTrees = parser.getTopElements();
 	}
 
 	/**
@@ -352,4 +349,11 @@ public class Config implements TokenDescriptionProvider {
     public void setMainFrame(JFrame mainFrame) {
         this.mainFrame = mainFrame;
     }
+
+	public Map<String, DwarfStructElement> getDwarfStructTrees()
+	{
+		return Collections.unmodifiableMap(dwarfStructTrees);
+	}
+    
+    
 }

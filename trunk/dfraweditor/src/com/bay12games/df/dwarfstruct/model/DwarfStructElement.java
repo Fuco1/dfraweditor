@@ -1,16 +1,21 @@
 package com.bay12games.df.dwarfstruct.model;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
-import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
 
 import com.bay12games.df.rawedit.xml.entities.Token;
 
+/**
+ * @author Bruno Zimmermann
+ *
+ */
 public class DwarfStructElement implements Comparable<DwarfStructElement>
 {
 	private static final Logger log = Logger.getLogger(DwarfStructElement.class);
-	private Set<DwarfStructElement> children;
+	private List<DwarfStructElement> children;
 	private DwarfStructElement parent;
 	private Token token;
 	/**
@@ -22,7 +27,7 @@ public class DwarfStructElement implements Comparable<DwarfStructElement>
 	{
 		super();
 		this.token = token;
-		children = new TreeSet<DwarfStructElement>();
+		children = new LinkedList<DwarfStructElement>();
 		log.debug("New DwarfStructElement with token: " + token.getName());
 	}
 	
@@ -46,6 +51,14 @@ public class DwarfStructElement implements Comparable<DwarfStructElement>
 		return token;
 	}
 
+	/**
+	 * Return a copy of the children
+	 * @return
+	 */
+	public List<DwarfStructElement> getChildren()
+	{
+		return new LinkedList<DwarfStructElement>(children);
+	}
 
 	@Override
 	public int compareTo(DwarfStructElement o)
@@ -53,5 +66,9 @@ public class DwarfStructElement implements Comparable<DwarfStructElement>
 		return this.getToken().compareTo(o.getToken());
 	}
 	
+	public boolean hasChildren()
+	{
+		return children.isEmpty();
+	}
 	
 }
