@@ -1,11 +1,13 @@
 package com.bay12games.df.dwarfstruct.gui;
 
+import java.awt.Dimension;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
 import com.bay12games.df.common.model.Constants;
@@ -16,26 +18,29 @@ import com.bay12games.df.rawedit.Config;
  * @author Bruno Zimmermann
  *
  */
-public class DwarfStructContentPanel extends JTabbedPane
+public class DwarfStructTabPanel extends JTabbedPane
 {
 	private Map<String, DwarfStructElement> dwarfStructTrees;
-	private List<DwarfStructContentPanel> realizedTokens;
+	private List<DwarfStructTabPanel> realizedTokens;
 	/**
 	 * 
 	 */
-	public DwarfStructContentPanel()
+	public DwarfStructTabPanel()
 	{
 		dwarfStructTrees=Config.getInstance().getDwarfStructTrees();
-		realizedTokens = new LinkedList<DwarfStructContentPanel>();
+		realizedTokens = new LinkedList<DwarfStructTabPanel>();
+		this.setPreferredSize(new Dimension(800,600));
 	}
 	
 
 	/**
 	 * @param file
 	 * @param dwarfStructTreeRoot
+	 * @throws IOException 
+	 * @throws FileNotFoundException 
 	 */
-	public void createNewTab(File file,String dwarfStructTreeRoot)
-	{
+	public void createNewTab(File file,String dwarfStructTreeRoot) throws FileNotFoundException, IOException
+	{		
 		createNewTab(file,dwarfStructTrees.get(dwarfStructTreeRoot));
 	}
 
@@ -43,10 +48,12 @@ public class DwarfStructContentPanel extends JTabbedPane
 	/**
 	 * @param file
 	 * @param dwarfStructElement
+	 * @throws IOException 
+	 * @throws FileNotFoundException 
 	 */
-	public void createNewTab(File file,DwarfStructElement dwarfStructElement)
+	public void createNewTab(File file,DwarfStructElement dwarfStructElement) throws FileNotFoundException, IOException
 	{
-		this.addTab(file.getName(),Constants.DWARF_ICON(), new DwarfStructWorkPanel(dwarfStructElement),file.getPath()+File.separator+file.getName());
+		this.addTab(file.getName(),Constants.DWARF_COLORED_ICON(), new DwarfStructBasePanel(dwarfStructElement),file.getPath());
 	}
 
 

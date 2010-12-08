@@ -18,7 +18,9 @@ id   = if true, the attribute is logic id of the object
 required = the attribute is required
 -->
 
-    <id name="ITEM_SUB_ID" from="ITEM_ARMOR" to="ARMOR" id="ITEM_ID"/>
+    <id name="ITEM_SUB_ID" from="ITEM_ARMOR" to="ARMOR" id="ITEM_ID">
+	<d>An item of the type Armor</d>
+	</id>
     <id name="ITEM_SUB_ID" from="ITEM_WEAPON" to="WEAPON" id="ITEM_ID"/>
     
     <c name="OBJECT:ITEM">

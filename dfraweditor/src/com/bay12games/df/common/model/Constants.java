@@ -47,8 +47,10 @@ public class Constants
 				public static final String		GUI_MENU_WINDOW_LOOKNFEEL			= "gui.menu.window.looknfeel";
 				public static final String		GUI_MENU_WINDOW_LOOKNFEEL_SYSTEM	= "gui.menu.window.looknfeel.system";
 				public static final String		GUI_MENU_WINDOW_LOOKNFEEL_CROSS		= "gui.menu.window.looknfeel.crosssystem";
-		
-	
+			
+			/*######## Selection Table ########*/
+			public static final String	GUI_SELECTION_TABLE_HEADER_ITEM		= "gui.selection.table.item";
+			public static final String	GUI_SELECTION_TABLE_HEADER_DESCRIPTION = "gui.selection.table.description";
 
 /*-----------Other-------------*/
 	/**

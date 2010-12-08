@@ -20,22 +20,19 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.HeadlessException;
-import java.awt.MenuItem;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.Map.Entry;
 
 import javax.swing.Action;
-import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
@@ -43,7 +40,6 @@ import javax.swing.JTextPane;
 import javax.swing.JTree;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.text.BadLocationException;
@@ -53,6 +49,8 @@ import javax.swing.undo.UndoManager;
 import org.apache.log4j.Logger;
 
 import com.bay12games.df.common.gui.ModToolGui;
+import com.bay12games.df.dwarfstruct.gui.DwarfStructSelectionTable;
+import com.bay12games.df.dwarfstruct.model.DwarfStructElement;
 import com.bay12games.df.rawedit.Autocomplete;
 import com.bay12games.df.rawedit.Config;
 import com.bay12games.df.rawedit.DocumentLoader;
@@ -232,7 +230,7 @@ public class Main extends JPanel {
 				} 
                 config.setMainFrame(frame);
                 //TODO Make it remember!
-                frame.setSystemLookAndFeel();
+                frame.setCrossPlatformLookAndFeel();
                 frame.display();
             }
 
@@ -241,4 +239,30 @@ public class Main extends JPanel {
 
         log.info("Session closed");
     }
+    
+//    private static void testSelectionTable()
+//    {
+//    	JFrame testFrame = new JFrame();
+//        testFrame.getContentPane().setLayout(new BorderLayout());
+//        Iterator<Entry<String, DwarfStructElement>> itr = config.getDwarfStructTrees().entrySet().iterator();
+//        itr.next();
+//        DwarfStructSelectionTable selTab;
+//		try
+//		{
+////			selTab = new DwarfStructSelectionTable(itr.next().getValue());
+//			selTab = new DwarfStructSelectionTable(itr.next().getValue().getChildren().iterator().next(),null);
+//			testFrame.getContentPane().add(new JScrollPane(selTab),BorderLayout.CENTER);
+//			testFrame.pack();
+//			testFrame.setVisible(true);
+//		} catch (FileNotFoundException e)
+//		{
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (IOException e)
+//		{
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//    }
+    
 }
