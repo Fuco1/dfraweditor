@@ -1,0 +1,78 @@
+[2010-10-17 22:36:02,184] INFO  [com.Main] Start 
+[2010-10-17 22:36:02,750] DEBUG [com.bay12games.df.dwarfstruct.model.DwarfStructElement] New DwarfStructElement with token: REACTION 
+[2010-10-17 22:36:02,750] DEBUG [com.bay12games.df.dwarfstruct.model.DwarfStructElement] New DwarfStructElement with token: REAGENT 
+[2010-10-17 22:36:02,750] DEBUG [com.bay12games.df.dwarfstruct.model.DwarfStructElement] New DwarfStructElement with token: PRODUCT 
+[2010-10-17 22:36:02,750] DEBUG [com.bay12games.df.dwarfstruct.model.DwarfStructElement] New DwarfStructElement with token: OBJECT:MATERIAL_TEMPLATE 
+[2010-10-17 22:36:02,750] DEBUG [com.bay12games.df.dwarfstruct.model.DwarfStructElement] New DwarfStructElement with token: MATERIAL_TEMPLATE 
+[2010-10-17 22:36:02,751] DEBUG [com.bay12games.df.dwarfstruct.model.DwarfStructElement] New DwarfStructElement with token: STATE_NAME 
+[2010-10-17 22:36:02,751] DEBUG [com.bay12games.df.dwarfstruct.model.DwarfStructElement] New DwarfStructElement with token: OBJECT:ITEM 
+[2010-10-17 22:36:02,751] DEBUG [com.bay12games.df.dwarfstruct.model.DwarfStructElement] New DwarfStructElement with token: ITEM_ARMOR 
+[2010-10-17 22:36:02,751] DEBUG [com.bay12games.df.dwarfstruct.model.DwarfStructElement] New DwarfStructElement with token: METAL 
+[2010-10-17 22:36:02,751] DEBUG [com.bay12games.df.dwarfstruct.model.DwarfStructElement] New DwarfStructElement with token: COVERAGE 
+[2010-10-17 22:36:02,751] DEBUG [com.bay12games.df.dwarfstruct.model.DwarfStructElement] New DwarfStructElement with token: LAYER 
+[2010-10-17 22:36:02,752] DEBUG [com.bay12games.df.dwarfstruct.model.DwarfStructElement] New DwarfStructElement with token: PREPLURAL 
+[2010-10-17 22:36:02,752] DEBUG [com.bay12games.df.dwarfstruct.model.DwarfStructElement] New DwarfStructElement with token: NAME 
+[2010-10-17 22:36:02,752] DEBUG [com.bay12games.df.dwarfstruct.model.DwarfStructElement] New DwarfStructElement with token: LAYER_SIZE 
+[2010-10-17 22:36:02,752] DEBUG [com.bay12games.df.dwarfstruct.model.DwarfStructElement] New DwarfStructElement with token: HARD 
+[2010-10-17 22:36:02,752] DEBUG [com.bay12games.df.dwarfstruct.model.DwarfStructElement] New DwarfStructElement with token: UBSTEP 
+[2010-10-17 22:36:02,752] DEBUG [com.bay12games.df.dwarfstruct.model.DwarfStructElement] New DwarfStructElement with token: BARRED 
+[2010-10-17 22:36:02,752] DEBUG [com.bay12games.df.dwarfstruct.model.DwarfStructElement] New DwarfStructElement with token: SCALED 
+[2010-10-17 22:36:02,752] DEBUG [com.bay12games.df.dwarfstruct.model.DwarfStructElement] New DwarfStructElement with token: LBSTEP 
+[2010-10-17 22:36:02,753] DEBUG [com.bay12games.df.dwarfstruct.model.DwarfStructElement] New DwarfStructElement with token: UPSTEP 
+[2010-10-17 22:36:02,753] DEBUG [com.bay12games.df.dwarfstruct.model.DwarfStructElement] New DwarfStructElement with token: MATERIAL_SIZE 
+[2010-10-17 22:36:02,753] DEBUG [com.bay12games.df.dwarfstruct.model.DwarfStructElement] New DwarfStructElement with token: STRUCTURAL_ELASTICITY_WOVEN_THREAD 
+[2010-10-17 22:36:02,753] DEBUG [com.bay12games.df.dwarfstruct.model.DwarfStructElement] New DwarfStructElement with token: STRUCTURAL_ELASTICITY_CHAIN_METAL 
+[2010-10-17 22:36:02,753] DEBUG [com.bay12games.df.dwarfstruct.model.DwarfStructElement] New DwarfStructElement with token: LEATHER 
+[2010-10-17 22:36:02,753] DEBUG [com.bay12games.df.dwarfstruct.model.DwarfStructElement] New DwarfStructElement with token: ARMORLEVEL 
+[2010-10-17 22:36:02,754] DEBUG [com.bay12games.df.dwarfstruct.model.DwarfStructElement] New DwarfStructElement with token: LAYER_PERMIT 
+[2010-10-17 22:36:02,754] DEBUG [com.bay12games.df.dwarfstruct.model.DwarfStructElement] New DwarfStructElement with token: SHAPED 
+[2010-10-17 22:36:02,754] DEBUG [com.bay12games.df.dwarfstruct.model.DwarfStructElement] New DwarfStructElement with token: SOFT 
+[2010-10-17 22:36:02,754] DEBUG [com.bay12games.df.dwarfstruct.model.DwarfStructElement] New DwarfStructElement with token: OBJECT:CREATURE 
+[2010-10-17 22:36:02,754] DEBUG [com.bay12games.df.dwarfstruct.model.DwarfStructElement] New DwarfStructElement with token: CREATURE 
+[2010-10-17 22:36:02,754] DEBUG [com.bay12games.df.dwarfstruct.model.DwarfStructElement] New DwarfStructElement with token: NAME 
+[2010-10-17 22:36:02,754] DEBUG [com.bay12games.df.dwarfstruct.model.DwarfStructElement] New DwarfStructElement with token: USE_MATERIAL_TEMPLATE 
+[2010-10-17 22:36:02,755] DEBUG [com.Main] Time needed for initialize config:569 
+[2010-10-17 22:36:02,804] INFO  [com.Main] Session closed 
+[2010-10-17 22:36:03,232] DEBUG [com.Main] Building initial model: 1287347763232 
+[2010-10-17 22:36:03,232] DEBUG [com.bay12games.df.rawedit.DocumentLoader] #### START 
+[2010-10-17 22:36:03,260] DEBUG [com.bay12games.df.rawedit.DocumentLoader] End time: 28 
+[2010-10-17 22:36:03,260] DEBUG [com.Main] 1287347763260 
+[2010-10-17 22:38:36,340] INFO  [com.Main] Start 
+[2010-10-17 22:38:36,449] DEBUG [com.bay12games.df.dwarfstruct.model.DwarfStructElement] New DwarfStructElement with token: REACTION 
+[2010-10-17 22:38:36,449] DEBUG [com.bay12games.df.dwarfstruct.model.DwarfStructElement] New DwarfStructElement with token: REAGENT 
+[2010-10-17 22:38:36,449] DEBUG [com.bay12games.df.dwarfstruct.model.DwarfStructElement] New DwarfStructElement with token: PRODUCT 
+[2010-10-17 22:38:36,449] DEBUG [com.bay12games.df.dwarfstruct.model.DwarfStructElement] New DwarfStructElement with token: OBJECT:MATERIAL_TEMPLATE 
+[2010-10-17 22:38:36,450] DEBUG [com.bay12games.df.dwarfstruct.model.DwarfStructElement] New DwarfStructElement with token: MATERIAL_TEMPLATE 
+[2010-10-17 22:38:36,450] DEBUG [com.bay12games.df.dwarfstruct.model.DwarfStructElement] New DwarfStructElement with token: STATE_NAME 
+[2010-10-17 22:38:36,450] DEBUG [com.bay12games.df.dwarfstruct.model.DwarfStructElement] New DwarfStructElement with token: OBJECT:ITEM 
+[2010-10-17 22:38:36,450] DEBUG [com.bay12games.df.dwarfstruct.model.DwarfStructElement] New DwarfStructElement with token: ITEM_ARMOR 
+[2010-10-17 22:38:36,450] DEBUG [com.bay12games.df.dwarfstruct.model.DwarfStructElement] New DwarfStructElement with token: METAL 
+[2010-10-17 22:38:36,450] DEBUG [com.bay12games.df.dwarfstruct.model.DwarfStructElement] New DwarfStructElement with token: COVERAGE 
+[2010-10-17 22:38:36,450] DEBUG [com.bay12games.df.dwarfstruct.model.DwarfStructElement] New DwarfStructElement with token: LAYER 
+[2010-10-17 22:38:36,450] DEBUG [com.bay12games.df.dwarfstruct.model.DwarfStructElement] New DwarfStructElement with token: PREPLURAL 
+[2010-10-17 22:38:36,451] DEBUG [com.bay12games.df.dwarfstruct.model.DwarfStructElement] New DwarfStructElement with token: NAME 
+[2010-10-17 22:38:36,451] DEBUG [com.bay12games.df.dwarfstruct.model.DwarfStructElement] New DwarfStructElement with token: LAYER_SIZE 
+[2010-10-17 22:38:36,451] DEBUG [com.bay12games.df.dwarfstruct.model.DwarfStructElement] New DwarfStructElement with token: HARD 
+[2010-10-17 22:38:36,451] DEBUG [com.bay12games.df.dwarfstruct.model.DwarfStructElement] New DwarfStructElement with token: UBSTEP 
+[2010-10-17 22:38:36,451] DEBUG [com.bay12games.df.dwarfstruct.model.DwarfStructElement] New DwarfStructElement with token: BARRED 
+[2010-10-17 22:38:36,451] DEBUG [com.bay12games.df.dwarfstruct.model.DwarfStructElement] New DwarfStructElement with token: SCALED 
+[2010-10-17 22:38:36,451] DEBUG [com.bay12games.df.dwarfstruct.model.DwarfStructElement] New DwarfStructElement with token: LBSTEP 
+[2010-10-17 22:38:36,452] DEBUG [com.bay12games.df.dwarfstruct.model.DwarfStructElement] New DwarfStructElement with token: UPSTEP 
+[2010-10-17 22:38:36,452] DEBUG [com.bay12games.df.dwarfstruct.model.DwarfStructElement] New DwarfStructElement with token: MATERIAL_SIZE 
+[2010-10-17 22:38:36,452] DEBUG [com.bay12games.df.dwarfstruct.model.DwarfStructElement] New DwarfStructElement with token: STRUCTURAL_ELASTICITY_WOVEN_THREAD 
+[2010-10-17 22:38:36,452] DEBUG [com.bay12games.df.dwarfstruct.model.DwarfStructElement] New DwarfStructElement with token: STRUCTURAL_ELASTICITY_CHAIN_METAL 
+[2010-10-17 22:38:36,452] DEBUG [com.bay12games.df.dwarfstruct.model.DwarfStructElement] New DwarfStructElement with token: LEATHER 
+[2010-10-17 22:38:36,452] DEBUG [com.bay12games.df.dwarfstruct.model.DwarfStructElement] New DwarfStructElement with token: ARMORLEVEL 
+[2010-10-17 22:38:36,452] DEBUG [com.bay12games.df.dwarfstruct.model.DwarfStructElement] New DwarfStructElement with token: LAYER_PERMIT 
+[2010-10-17 22:38:36,453] DEBUG [com.bay12games.df.dwarfstruct.model.DwarfStructElement] New DwarfStructElement with token: SHAPED 
+[2010-10-17 22:38:36,453] DEBUG [com.bay12games.df.dwarfstruct.model.DwarfStructElement] New DwarfStructElement with token: SOFT 
+[2010-10-17 22:38:36,453] DEBUG [com.bay12games.df.dwarfstruct.model.DwarfStructElement] New DwarfStructElement with token: OBJECT:CREATURE 
+[2010-10-17 22:38:36,453] DEBUG [com.bay12games.df.dwarfstruct.model.DwarfStructElement] New DwarfStructElement with token: CREATURE 
+[2010-10-17 22:38:36,453] DEBUG [com.bay12games.df.dwarfstruct.model.DwarfStructElement] New DwarfStructElement with token: NAME 
+[2010-10-17 22:38:36,453] DEBUG [com.bay12games.df.dwarfstruct.model.DwarfStructElement] New DwarfStructElement with token: USE_MATERIAL_TEMPLATE 
+[2010-10-17 22:38:36,453] DEBUG [com.Main] Time needed for initialize config:112 
+[2010-10-17 22:38:36,492] INFO  [com.Main] Session closed 
+[2010-10-17 22:38:36,771] DEBUG [com.Main] Building initial model: 1287347916771 
+[2010-10-17 22:38:36,771] DEBUG [com.bay12games.df.rawedit.DocumentLoader] #### START 
+[2010-10-17 22:38:36,781] DEBUG [com.bay12games.df.rawedit.DocumentLoader] End time: 10 
+[2010-10-17 22:38:36,781] DEBUG [com.Main] 1287347916781 

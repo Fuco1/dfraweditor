@@ -68,7 +68,7 @@ public class DwarfStructElement implements Comparable<DwarfStructElement>
 	
 	public boolean hasChildren()
 	{
-		return children.isEmpty();
+		return !children.isEmpty();
 	}
 	
 }

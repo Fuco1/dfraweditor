@@ -116,4 +116,13 @@ public class Token implements Comparable<Token>{
 	{
 		return this.getName().compareTo(o.getName());
 	}
+	
+	public boolean hasDescription()
+	{
+		if(description==null || description.equals(""))
+		{
+			return false;
+		}
+		return true;
+	}
 }

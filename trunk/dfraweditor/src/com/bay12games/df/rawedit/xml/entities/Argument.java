@@ -1,6 +1,6 @@
 /*
- *  Copyright (C) 2010 Matus Goljer
  * 
+ *  Copyright (C) 2010 Matus Goljer
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 3 of the License, or
@@ -27,10 +27,10 @@ import org.apache.log4j.Logger;
  * This class represents a single argument of container or token. Each argument
  * has a type, currently one of the four following:
  * <ul>
- * <li>int - for numerical values</li>
- * <li>string - text strings</li>
- * <li>enum - a list of allowed string or integer values (treated as strings)</li>
- * <li>range - a min-max integer range</li>
+ * <li>int (TYPE_INT) - for numerical values</li>
+ * <li>string (TYPE_STRING) - text strings</li>
+ * <li>enum (TYPE_ENUM) - a list of allowed string or integer values (treated as strings)</li>
+ * <li>range (TYPE_RANGE) - a min-max integer range</li>
  * </ul>
  *
  * For simplicity, each argument has all of the properties defined and defaulted
@@ -41,6 +41,24 @@ import org.apache.log4j.Logger;
  */
 public class Argument {
 
+	/**
+	 * for numerical values
+	 */
+	public static final String TYPE_INT 	= "int";
+	/**
+	 * text strings
+	 */
+	public static final String TYPE_STRING 	= "string";
+	/**
+	 * a list of allowed string or integer values (treated as strings)
+	 */
+	public static final String TYPE_ENUM 	= "enum";
+	/**
+	 * a min-max integer range
+	 */
+	public static final String TYPE_RANGE 	= "range";
+	
+	
     private static final Logger log = Logger.getLogger(Argument.class);
     private String type;
     private String description;
@@ -66,11 +84,24 @@ public class Argument {
         this.max = max;
     }
 
+    public Argument(String id, String type, int min, int max) {
+        this.id=id;
+    	this.type = type;
+        this.min = min;
+        this.max = max;
+    }
+    
     public Argument(String type, Set<String> enumItems) {
         this.type = type;
         this.enumItems = enumItems;
     }
 
+    public Argument(String id,String type, Set<String> enumItems) {
+        this.id = id;
+    	this.type = type;
+        this.enumItems = enumItems;
+    }
+    
     public void setDescription(String description) {
         this.description = description;
     }

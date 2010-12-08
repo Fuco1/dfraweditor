@@ -23,7 +23,7 @@ import com.Main;
 import com.bay12games.df.common.gui.dialogpannels.DialogPanelFactory;
 import com.bay12games.df.common.model.Constants;
 import com.bay12games.df.common.model.PropertiesLoader;
-import com.bay12games.df.dwarfstruct.gui.DwarfStructContentPanel;
+import com.bay12games.df.dwarfstruct.gui.DwarfStructTabPanel;
 import com.bay12games.df.dwarfstruct.model.DwarfStructElement;
 import com.bay12games.df.rawedit.Config;
 
@@ -31,7 +31,7 @@ public class ModToolGui extends JFrame
 {
 	private JPanel					contentPanel;
 	private Main					rawEdit;
-	private DwarfStructContentPanel	dwarfStruct;
+	private DwarfStructTabPanel	dwarfStruct;
 	private PropertiesLoader		prop;
 	private DialogPanelFactory		dialogFactory;
 	
@@ -45,7 +45,7 @@ public class ModToolGui extends JFrame
 		super.setJMenuBar(createMenuBar());
 		contentPanel = new JPanel(new BorderLayout());
 		rawEdit = new Main();
-		dwarfStruct = new DwarfStructContentPanel();
+		dwarfStruct = new DwarfStructTabPanel();
 		dialogFactory = new DialogPanelFactory();
 		setContentDwarfStruct();
 	}
@@ -95,7 +95,6 @@ public class ModToolGui extends JFrame
 				try
 				{
 					Iterator<String> userInputs = dialogFactory.newFilePrompt(getContentPane()).iterator();
-					
 					dwarfStruct.createNewTab(createFile(userInputs.next()), userInputs.next());
 				} catch (FileNotFoundException e)
 				{
@@ -106,39 +105,41 @@ public class ModToolGui extends JFrame
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-//				DwarfStructElement dwarfStructElement = newFileInputDialog();
-//				if(dwarfStructElement!=null)
-//				{
-//					dwarfStruct.createNewTab(file, dwarfStructTreeRoot);
-//				}
 			}
 
 			private File createFile(String filename) throws IOException
 			{
-				File file = goOutside(new File(filename));
+				File dir = goOutside(new File(""));
+				File file = constructFile(dir,filename);
 				if(file.exists())
 				{
-					file = createFile(filename,2);
+					file = createFile(dir,filename,2);
 				}
-				file.createNewFile();
+				// TODO Uncomment when done
+//				file.createNewFile();
 				return file;
 			}
-			private File createFile(String filename, int number)
+			private File createFile(File dir,String filename, int number)
 			{
-				File file = new File(filename);
+				File file = constructFile(dir,filename);
 				if(file.exists())
 				{
-					file = createFile(filename, number++);
+					file = createFile(dir,filename, number++);
 				}
 				return file;
 			}
 			private File goOutside(File file)
 			{
-				file = new File(file.getAbsoluteFile().getParentFile().getAbsolutePath().concat(file.getName()));
-				return file;
+				return file.getAbsoluteFile().getParentFile();
+			}
+			private File constructFile(File dir, String filename)
+			{
+				return new File(dir.getAbsolutePath()+File.separator+filename);
 			}
 		});
 		JMenuItem loadFile = new JMenuItem(prop.getProperty(Constants.GUI_MENU_FILE_LOAD), KeyEvent.VK_L);
+		file.add(newFile);
+		file.add(loadFile);
 		return file;
 	}
 
@@ -208,6 +209,9 @@ public class ModToolGui extends JFrame
 		return looknFeelMenu;
 	}
 
+	/**
+	 * 
+	 */
 	public void setSystemLookAndFeel()
 	{
 		try
@@ -233,6 +237,9 @@ public class ModToolGui extends JFrame
 		SwingUtilities.updateComponentTreeUI(contentPanel);
 	}
 
+	/**
+	 * 
+	 */
 	public void setCrossPlatformLookAndFeel()
 	{
 		try
