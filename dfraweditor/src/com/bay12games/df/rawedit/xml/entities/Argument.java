@@ -60,6 +60,7 @@ public class Argument {
 	
 	
     private static final Logger log = Logger.getLogger(Argument.class);
+    private String label;
     private String type;
     private String description;
     private int min = 0;
@@ -133,8 +134,24 @@ public class Argument {
     public int getMin() {
         return min;
     }
-
+    
     /**
+	 * @return the lable
+	 */
+	public String getLabel()
+	{
+		return label;
+	}
+
+	/**
+	 * @param lable the label to set 
+	 */
+	public void setLabel(String lable)
+	{
+		this.label = lable;
+	}
+
+	/**
      * @param owner Owner of this argument
      * @param index Index of this argument in owner's list
      * @param tokens List of all language tokens (token/container name and values of all arguments)

@@ -13,7 +13,7 @@ import com.bay12games.df.rawedit.xml.entities.Argument;
 public abstract class InputArgument extends JPanel
 {
 	private Argument	argument;
-	private JPanel		lablePanel, textPanel;
+	private JPanel		labelPanel, textPanel;
 	
 	/**
 	 * @param argument
@@ -21,7 +21,7 @@ public abstract class InputArgument extends JPanel
 	protected InputArgument(Argument argument)
 	{
 		setArgument(argument);
-		lablePanel = new JPanel();
+		labelPanel = new JPanel();
 		textPanel = new JPanel();
 		create(argument);
 	}
@@ -31,6 +31,8 @@ public abstract class InputArgument extends JPanel
 	 */
 	public abstract Argument getArgument();
 
+	public abstract String getValue();
+	
 	/**
 	 * @param argument
 	 */
@@ -47,16 +49,16 @@ public abstract class InputArgument extends JPanel
 	 */
 	protected JPanel getLablePanel()
 	{
-		return lablePanel;
+		return labelPanel;
 	}
 
 	/**
-	 * @param lablePanel
+	 * @param labelPanel
 	 *            the lablePanel to set
 	 */
-	protected void setLablePanel(JPanel lablePanel)
+	protected void setLablePanel(JPanel labelPanel)
 	{
-		this.lablePanel = lablePanel;
+		this.labelPanel = labelPanel;
 	}
 
 	/**
@@ -89,7 +91,12 @@ public abstract class InputArgument extends JPanel
 	{
 		this.setLayout(new BorderLayout());
 		JPanel inPanel = new JPanel(new BorderLayout());
-		JLabel label = new JLabel(argument.getId() + ": ");
+		String labeltext = new String();
+		if(argument.getLabel()!=null)
+		{
+			labeltext = argument.getLabel() + ": ";
+		}
+		JLabel label = new JLabel(labeltext);
 		label.setToolTipText(argument.getType());
 		inPanel.add(label, BorderLayout.LINE_START);
 		applyDescription(argument);
@@ -105,7 +112,7 @@ public abstract class InputArgument extends JPanel
 	protected void applyDescription(Argument argument)
 	{
 		JTextArea description = createDescription(argument);
-		this.add(description, BorderLayout.CENTER);
+		this.add(description, BorderLayout.PAGE_END);
 	}
 
 	/**
@@ -122,5 +129,7 @@ public abstract class InputArgument extends JPanel
 		description.setWrapStyleWord(true);
 		return description;
 	}
+
+	public abstract void setValue(String string);
 
 }

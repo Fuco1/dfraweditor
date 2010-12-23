@@ -31,6 +31,8 @@ public class DwarfStructElement implements Comparable<DwarfStructElement>
 		log.debug("New DwarfStructElement with token: " + token.getName());
 	}
 	
+	
+	
 	public void addChild(DwarfStructElement child)
 	{
 		children.add(child);
@@ -69,6 +71,16 @@ public class DwarfStructElement implements Comparable<DwarfStructElement>
 	public boolean hasChildren()
 	{
 		return !children.isEmpty();
+	}
+	
+	@Override
+	public String toString()
+	{
+		String returnValue = new String();
+		
+		returnValue+=getToken().toString();
+		
+		return returnValue;
 	}
 	
 }

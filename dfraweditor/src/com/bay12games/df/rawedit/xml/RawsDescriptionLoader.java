@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010 Matus Goljer
+ *  Copyright (C) 2010 Matus Goljer & Bruno Zimmermann
  * 
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -16,6 +16,8 @@
  */
 package com.bay12games.df.rawedit.xml;
 
+import com.bay12games.df.common.model.Constants;
+import com.bay12games.df.common.model.PropertiesLoader;
 import com.bay12games.df.rawedit.xml.entities.Argument;
 import com.bay12games.df.rawedit.xml.entities.Container;
 import com.bay12games.df.rawedit.xml.entities.ElementContainer;
@@ -287,7 +289,9 @@ public class RawsDescriptionLoader {
         if (desc != null && argument != null) {
             argument.setDescription(desc);
         }
-
+        argument.setLabel(e.attributeValue(Constants.XML_ARGUMENT_LABLE));
+        
+        
         return argument;
     }
 
