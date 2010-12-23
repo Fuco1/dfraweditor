@@ -4,25 +4,31 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.swing.BoxLayout;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+
+import org.apache.log4j.Logger;
 
 import com.bay12games.df.dwarfstruct.gui.action.ComponentSelectionListener;
 import com.bay12games.df.dwarfstruct.gui.action.SelectableDwarfStructComponent;
 import com.bay12games.df.dwarfstruct.gui.argument.InputArgumentFactory;
 import com.bay12games.df.dwarfstruct.gui.element.DwarfStructElementPanel;
 import com.bay12games.df.dwarfstruct.model.DwarfStructElement;
+import com.bay12games.df.dwarfstruct.model.fileoperation.RawFileSaver;
 import com.bay12games.df.rawedit.xml.entities.Argument;
 
-public class DwarfStructBasePanel extends JPanel implements DwarfStructContainer, SelectableDwarfStructComponent
+public class DwarfStructBasePanel extends JPanel implements SelectableDwarfStructComponent
 {
+	private static final Logger log = Logger.getLogger(DwarfStructBasePanel.class);
 	/**
 	 * The selectionTable that shows which tokens still can be added
 	 */
@@ -37,14 +43,17 @@ public class DwarfStructBasePanel extends JPanel implements DwarfStructContainer
 	private List<DwarfStructElementPanel> subElements;
 	private List<DwarfStructElement> possibleElements;
 	
+	private File file;
 	
 	private JPanel contentPanel;
+	private JScrollPane contentScrollPanel;
 	
 	private JLabel elementTitleLabel;
 	
-	public DwarfStructBasePanel(DwarfStructElement element) throws FileNotFoundException, IOException
+	public DwarfStructBasePanel(DwarfStructElement element, File file) throws FileNotFoundException, IOException
 	{
 		this.element = element;
+		this.file = file;
 		possibleElements = element.getChildren();
 		subElements = new LinkedList<DwarfStructElementPanel>();
 		init();
@@ -61,7 +70,8 @@ public class DwarfStructBasePanel extends JPanel implements DwarfStructContainer
 		elementTitleLabel.setFont(new Font("titleFont",Font.BOLD,18));
 		elementTitleLabel.setPreferredSize(new Dimension(this.getWidth(),24));
 		selectTable = new DwarfStructSelectionTable(this);
-		contentPanel=new JPanel(new FlowLayout());
+		contentPanel=new JPanel();
+		contentPanel.setLayout(new BoxLayout(contentPanel,BoxLayout.Y_AXIS));
 		
 	}
 	
@@ -69,37 +79,50 @@ public class DwarfStructBasePanel extends JPanel implements DwarfStructContainer
 	{
 		
 		add(elementTitleLabel,BorderLayout.PAGE_START);
-		add(new JScrollPane(contentPanel),BorderLayout.CENTER);
+		add(contentScrollPanel=new JScrollPane(contentPanel),BorderLayout.CENTER);
 		JScrollPane selectionTablePane = new JScrollPane(selectTable);
 		selectionTablePane.setPreferredSize(new Dimension(300,500));
-		contentPanel.setPreferredSize(new Dimension(500,500));
+		//contentPanel.setPreferredSize(new Dimension(500,500));
 		add(selectionTablePane,BorderLayout.LINE_END);
 		this.addMouseListener(new ComponentSelectionListener(this.selectTable,this));
+		contentPanel.addMouseListener(new ComponentSelectionListener(this.selectTable,this));
+		
 	}
 
+	
+	
 
 	@Override
-	public void addElement(DwarfStructElement element)
+	public DwarfStructElementPanel addElement(DwarfStructElement element)
 	{
-		DwarfStructElementPanel elementPanel =  new DwarfStructElementPanel(element,selectTable,contentPanel.getWidth()-30);
+		DwarfStructElementPanel elementPanel =  new DwarfStructElementPanel(element,selectTable,this);
 		InputArgumentFactory factory = new InputArgumentFactory();
 		List<Argument> arguments = element.getToken().getArguments();
 		for(int i = 0;i<arguments.size();i++){
 		elementPanel.addInput(factory.createInputPanel(arguments.get(i)));
 		}
 		elementPanel.build();
-		contentPanel.add(elementPanel);
-		subElements.add(elementPanel);
-		contentPanel.revalidate();
+		addElementToPanel(elementPanel);
+		return elementPanel;
 	}
 
+
+
+
+	/**
+	 * @param elementPanel
+	 */
+	private void addElementToPanel(DwarfStructElementPanel elementPanel)
+	{
+		contentPanel.add(elementPanel);
+		subElements.add(elementPanel);
+		contentScrollPanel.revalidate();
+	}
 	
-//To make that work DwarfStructElementPanel must implement comparable!!! Then profit!
-	@Override
 	public void removeElement(DwarfStructElement element)
 	{
 		subElements.remove(element);
-		contentPanel.revalidate();
+		contentScrollPanel.revalidate();
 	}
 
 
@@ -109,5 +132,47 @@ public class DwarfStructBasePanel extends JPanel implements DwarfStructContainer
 	{
 		return possibleElements;
 	}
+
+
+	/**
+	 * Well.. Saves it. What else to say?
+	 * @throws IOException 
+	 */
+	public void save() throws IOException
+	{
+		RawFileSaver saver = new RawFileSaver(file, this);
+		
+	}
+
+
+	/**
+	 * @return the subElements
+	 */
+	public List<DwarfStructElementPanel> getSubElements()
+	{
+		return subElements;
+	}
+
+
+	/**
+	 * @return the element
+	 */
+	public DwarfStructElement getElement()
+	{
+		return element;
+	}
+
+
+	/**
+	 * @return the selectTable
+	 */
+	public DwarfStructSelectionTable getSelectTable()
+	{
+		return selectTable;
+	}
+
+
+
+	
 	
 }

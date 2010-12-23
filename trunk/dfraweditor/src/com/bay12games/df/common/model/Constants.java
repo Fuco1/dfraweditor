@@ -40,6 +40,8 @@ public class Constants
 				public static final String		GUI_MENU_FILE_NEW_DIALOG_LABEL_FILENAME		= "gui.menu.file.new.dialog.label.filename";
 				public static final String		GUI_MENU_FILE_NEW_DIALOG_DEFAULT_FILENAME	= "gui.menu.file.new.dialog.defaultfilename";
 				public static final String		GUI_MENU_FILE_LOAD							= "gui.menu.file.load";
+				public static final String		GUI_MENU_FILE_SAVE							= "gui.menu.file.save";
+				public static final String		GUI_MENU_FILE_SAVEALL						= "gui.menu.file.saveall";
 				/*#### WINDOW ####*/
 				public static final String		GUI_MENU_WINDOW						= "gui.menu.window";
 				public static final String		GUI_MENU_WINDOW_RAWEDIT				= "gui.menu.window.rawedit";
@@ -75,4 +77,8 @@ public class Constants
 	public static final String	DWARF_COLORED_DOUBLE_SIZE_ICON_LOCATION	= "images/dorf_colored_2x.png";
 
 
+	
+	///////////////////////////////////////////////////////////////////////////////
+	
+	public static final String XML_ARGUMENT_LABLE = "label";
 }

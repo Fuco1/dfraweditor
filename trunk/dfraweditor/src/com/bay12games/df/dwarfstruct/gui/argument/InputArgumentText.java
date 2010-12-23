@@ -49,7 +49,7 @@ class InputArgumentText extends InputArgument
 		inPanel = createInPanelAndDescription(argument);
 		inputValue = new JTextField();
 //		inputValue.setPreferredSize(new Dimension(this.getWidth()/3*2,HEIGHT));
-		inputValue.setPreferredSize(new Dimension(300,20));
+		inputValue.setPreferredSize(new Dimension(450,20));
 		inputValue.setToolTipText(argument.getType());
 		inPanel.add(inputValue,BorderLayout.LINE_END);
 		this.add(inPanel,BorderLayout.PAGE_START);
@@ -61,5 +61,19 @@ class InputArgumentText extends InputArgument
 	public void setSize(Dimension preferredSize)
 	{
 		
+	}
+
+
+	@Override
+	public String getValue()
+	{
+		return inputValue.getText();
+	}
+
+
+	@Override
+	public void setValue(String value)
+	{
+		inputValue.setText(value);
 	}	
 }

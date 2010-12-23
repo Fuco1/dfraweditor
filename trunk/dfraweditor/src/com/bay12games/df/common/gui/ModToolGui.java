@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -24,8 +25,6 @@ import com.bay12games.df.common.gui.dialogpannels.DialogPanelFactory;
 import com.bay12games.df.common.model.Constants;
 import com.bay12games.df.common.model.PropertiesLoader;
 import com.bay12games.df.dwarfstruct.gui.DwarfStructTabPanel;
-import com.bay12games.df.dwarfstruct.model.DwarfStructElement;
-import com.bay12games.df.rawedit.Config;
 
 public class ModToolGui extends JFrame
 {
@@ -93,9 +92,12 @@ public class ModToolGui extends JFrame
 			public void actionPerformed(ActionEvent arg0)
 			{
 				try
-				{
-					Iterator<String> userInputs = dialogFactory.newFilePrompt(getContentPane()).iterator();
-					dwarfStruct.createNewTab(createFile(userInputs.next()), userInputs.next());
+				{  List<String> userInputs = dialogFactory.newFilePrompt(getContentPane());
+					if(userInputs!=null)
+					{
+						Iterator<String> userInputIterator = userInputs.iterator();
+						dwarfStruct.createNewTab(createFile(userInputIterator.next()), userInputIterator.next());
+					}
 				} catch (FileNotFoundException e)
 				{
 					// TODO Auto-generated catch block
@@ -138,7 +140,62 @@ public class ModToolGui extends JFrame
 			}
 		});
 		JMenuItem loadFile = new JMenuItem(prop.getProperty(Constants.GUI_MENU_FILE_LOAD), KeyEvent.VK_L);
+		loadFile.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				try
+				{
+					dwarfStruct.load();
+				} catch (FileNotFoundException e1)
+				{
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (IOException e1)
+				{
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+		});
+		JMenuItem saveFile = new JMenuItem(prop.getProperty(Constants.GUI_MENU_FILE_SAVE), KeyEvent.VK_S);
+		saveFile.addActionListener(new ActionListener()
+		{
+		
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				try
+				{
+					dwarfStruct.saveSelected();
+				} catch (IOException e1)
+				{
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+		});
+		JMenuItem saveAll = new JMenuItem(prop.getProperty(Constants.GUI_MENU_FILE_SAVEALL));
+		saveAll.addActionListener(new ActionListener()
+		{
+		
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+			try
+			{
+				dwarfStruct.saveAll();
+			} catch (IOException e1)
+			{
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			}
+		});
 		file.add(newFile);
+		file.add(saveFile);
+		file.add(saveAll);
 		file.add(loadFile);
 		return file;
 	}

@@ -14,7 +14,8 @@ import com.bay12games.df.rawedit.xml.entities.Argument;
 class InputArgumentSlider extends InputArgument
 {
 
-
+	private JSlider slider;
+	
 	protected InputArgumentSlider(Argument argument)
 	{
 		super(argument);
@@ -35,8 +36,11 @@ class InputArgumentSlider extends InputArgument
 	{
 		this.setLayout(new BorderLayout());
 		JPanel inPanel = createInPanelAndDescription(argument);
-		JSlider silder = new JSlider(argument.getMin(),argument.getMax());
-		inPanel.add(silder,BorderLayout.LINE_END);
+		slider = new JSlider(argument.getMin(),argument.getMax());
+		slider.setMinorTickSpacing(1);
+		slider.setPaintTicks(true);
+		slider.setPaintLabels(true);
+		inPanel.add(slider,BorderLayout.LINE_END);
 		this.add(inPanel,BorderLayout.PAGE_START);
 		
 	}
@@ -54,6 +58,20 @@ class InputArgumentSlider extends InputArgument
 	{
 		// TODO Auto-generated method stub
 		
+	}
+
+
+	@Override
+	public String getValue()
+	{
+		return Integer.toString(slider.getValue());
+	}
+
+
+	@Override
+	public void setValue(String value)
+	{
+		slider.setValue(new Integer(value).intValue());
 	}
 
 	

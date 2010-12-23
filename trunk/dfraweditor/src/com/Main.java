@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010 Matus Goljer
+ *  Copyright (C) 2010 Matus Goljer & Bruno Zimmermann
  * 
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -33,6 +33,7 @@ import java.util.Map.Entry;
 import javax.swing.Action;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
@@ -200,6 +201,7 @@ public class Main extends JPanel {
     }
 
     public static void main(String[] args) {
+    	printInfo("Armoks grace, what is it?");
         log.info("Start");
         Date t1 = new Date();
         config = Config.getInstance();
@@ -211,21 +213,24 @@ public class Main extends JPanel {
 
             @Override
             public void run() {
+            	printInfo("Runnin");
                 ModToolGui frame = null;
 				try
 				{
 					frame = new ModToolGui();
 				} catch (HeadlessException e)
 				{
-					// TODO Auto-generated catch block
+					printInfo("An unexpected error occured!\n"+e.toString());
 					e.printStackTrace();
 				} catch (FileNotFoundException e)
 				{
 					// TODO Auto-generated catch block
+					printInfo("A file was not found!\n"+e.toString());
 					e.printStackTrace();
 				} catch (IOException e)
 				{
 					// TODO Auto-generated catch block
+					printInfo("An unexpected error occured!\n"+e.toString());
 					e.printStackTrace();
 				} 
                 config.setMainFrame(frame);
@@ -240,29 +245,9 @@ public class Main extends JPanel {
         log.info("Session closed");
     }
     
-//    private static void testSelectionTable()
-//    {
-//    	JFrame testFrame = new JFrame();
-//        testFrame.getContentPane().setLayout(new BorderLayout());
-//        Iterator<Entry<String, DwarfStructElement>> itr = config.getDwarfStructTrees().entrySet().iterator();
-//        itr.next();
-//        DwarfStructSelectionTable selTab;
-//		try
-//		{
-////			selTab = new DwarfStructSelectionTable(itr.next().getValue());
-//			selTab = new DwarfStructSelectionTable(itr.next().getValue().getChildren().iterator().next(),null);
-//			testFrame.getContentPane().add(new JScrollPane(selTab),BorderLayout.CENTER);
-//			testFrame.pack();
-//			testFrame.setVisible(true);
-//		} catch (FileNotFoundException e)
-//		{
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (IOException e)
-//		{
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//    }
     
+	public static void printInfo(String info)
+	{
+		JOptionPane.showMessageDialog(null, info);
+	}
 }

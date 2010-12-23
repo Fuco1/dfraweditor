@@ -63,7 +63,7 @@ required = the attribute is required
     </c>
 
     <t name="ARMORLEVEL">
-        <a type="range" min="0" max="3">
+        <a lable="Level" type="range" min="0" max="3">
             <d>A range of 0 to 3, specify the strength of the armor</d>
         </a>
     </t>
@@ -100,9 +100,10 @@ required = the attribute is required
     </t>
 
     <t name="NAME">
-        <a type="string"/>
-        <a type="string"/>
-        <a type="string"/>
+        <d>Responsible for the name that will be displayed in game</d>
+        <a label="singular" type="string"/>
+        <a label="plural" type="string"/>
+        <a label="adjective" type="string"/>
     </t>
 
     <t name="PREPLURAL">

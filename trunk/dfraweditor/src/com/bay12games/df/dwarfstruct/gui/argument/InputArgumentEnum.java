@@ -41,4 +41,18 @@ public class InputArgumentEnum extends InputArgument
 		
 	}
 
+	@Override
+	public String getValue()
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setValue(String string)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
 }
